@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AppShell from '@/layouts/AppShell.vue'
 import CalendarView from '@/views/CalendarView.vue'
 import HomeView from '@/views/HomeView.vue'
+import MarkdownTestView from '@/views/MarkdownTestView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 
 const router = createRouter({
@@ -23,6 +24,12 @@ const router = createRouter({
           name: 'calendar',
           component: CalendarView,
           meta: { title: '打卡日历' },
+        },
+        {
+          path: 'markdown-test',
+          name: 'markdown-test',
+          component: MarkdownTestView,
+          meta: { title: 'Markdown 测试' },
         },
         {
           path: 'settings',

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ThemePreference } from '@/theme/constants'
-import { MonitorSmartphone, Moon, Sun, Trash2 } from '@lucide/vue'
+import { FileCode2, MonitorSmartphone, Moon, Sun, Trash2 } from '@lucide/vue'
+import { RouterLink } from 'vue-router'
 import { useThemePreference } from '@/composables/useThemePreference'
 
 const { preference, resolvedScheme, setPreference } = useThemePreference()
@@ -61,6 +62,32 @@ function clearAllLocalData() {
         外观 · 当前界面为「{{ hint(resolvedScheme) }}」
       </p>
     </header>
+
+    <div
+      class="rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-5 shadow-[0_6px_0_0_var(--app-border)] sm:p-6"
+    >
+      <h2 class="mb-5 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted) sm:mb-6">
+        开发
+      </h2>
+      <RouterLink
+        to="/markdown-test"
+        class="flex w-full items-center gap-4 rounded-2xl border-2 border-(--app-border) bg-(--app-subtle) px-4 py-3 text-left no-underline outline-none transition-colors ring-(--app-primary) ring-offset-2 ring-offset-(--app-surface) hover:bg-(--app-hover) focus-visible:ring-2"
+      >
+        <span
+          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-(--app-border) bg-(--app-surface) text-(--app-muted)"
+        >
+          <FileCode2 :size="22" :stroke-width="2.5" aria-hidden="true" />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block text-[15px] font-extrabold tracking-wide text-(--app-text)">
+            Markdown 解析测试
+          </span>
+          <span class="mt-0.5 block text-sm font-bold text-(--app-muted)">
+            使用 unplugin-vue-markdown 编译示例 `.md`
+          </span>
+        </span>
+      </RouterLink>
+    </div>
 
     <div
       class="rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-5 shadow-[0_6px_0_0_var(--app-border)] sm:p-6"
