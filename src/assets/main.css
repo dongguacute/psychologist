@@ -51,3 +51,124 @@ body {
 #app {
   min-height: 100vh;
 }
+
+/* 动效曲线与时长（尊重系统“减少动态效果”） */
+:root {
+  --app-ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --app-ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --app-dur-page: 0.34s;
+  --app-dur-page-leave: 0.22s;
+  --app-dur-shell: 0.48s;
+}
+
+/* 路由切换：内容淡入 + 轻微位移 */
+.app-page-enter-active {
+  transition:
+    opacity var(--app-dur-page) var(--app-ease-smooth),
+    transform var(--app-dur-page) var(--app-ease-smooth);
+}
+
+.app-page-leave-active {
+  transition:
+    opacity var(--app-dur-page-leave) ease-in,
+    transform var(--app-dur-page-leave) ease-in;
+}
+
+.app-page-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.app-page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-page-enter-active,
+  .app-page-leave-active {
+    transition-duration: 0.01ms !important;
+    transition-timing-function: linear !important;
+  }
+
+  .app-page-enter-from,
+  .app-page-leave-to {
+    transform: none !important;
+  }
+}
+
+/* 首屏壳层入场（仅加载时出现一次） */
+@keyframes app-shell-aside-in {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes app-shell-header-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes app-shell-nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes app-shell-glow-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app-shell-aside {
+    animation: app-shell-aside-in var(--app-dur-shell) var(--app-ease-smooth) both;
+  }
+
+  .app-shell-header {
+    animation: app-shell-header-in calc(var(--app-dur-shell) * 0.85) var(--app-ease-smooth) both;
+  }
+
+  .app-shell-mobile-nav {
+    animation: app-shell-nav-in calc(var(--app-dur-shell) * 0.9) var(--app-ease-smooth) both;
+  }
+
+  .app-shell-bg-glow {
+    animation: app-shell-glow-in 0.9s var(--app-ease-out) both;
+  }
+}
+
+/* 主内容区内滚动：平滑滚动（减少动态效果时由 UA 覆盖） */
+.app-shell-main {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell-main {
+    scroll-behavior: auto;
+  }
+}

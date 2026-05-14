@@ -11,7 +11,7 @@ function itemActive(name: string) {
 
 <template>
   <aside
-    class="hidden min-h-0 w-[280px] shrink-0 flex-col border-r-2 border-[var(--app-border)] bg-[var(--app-surface)] px-4 pb-6 pt-6 shadow-[var(--app-aside-edge-shadow)] lg:w-[304px] md:flex md:min-h-[100dvh]"
+    class="app-shell-aside hidden h-[100dvh] max-h-[100dvh] w-[280px] shrink-0 flex-col overflow-y-hidden overflow-x-hidden border-r-2 border-[var(--app-border)] bg-[var(--app-surface)] px-4 pb-6 pt-6 shadow-[var(--app-aside-edge-shadow)] lg:w-[304px] md:flex"
     aria-label="主导航"
   >
     <RouterLink
@@ -26,7 +26,7 @@ function itemActive(name: string) {
         v-for="item in primaryNavItems"
         :key="item.name"
         :to="item.to"
-        class="group flex items-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 no-underline outline-none transition-colors duration-150 ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
+        class="group flex items-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 no-underline outline-none transition-[color,background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] hover:translate-x-0.5 focus-visible:ring-2 active:scale-[0.98]"
         :class="
           itemActive(item.name)
             ? 'border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] text-[var(--app-primary-strong)]'
@@ -34,7 +34,7 @@ function itemActive(name: string) {
         "
       >
         <span
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-[border-color,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
           :class="
             itemActive(item.name)
               ? 'border-[var(--app-primary)] bg-[var(--app-surface)] text-[var(--app-primary)]'
@@ -60,7 +60,7 @@ function itemActive(name: string) {
     >
       <RouterLink
         :to="settingsNavItem.to"
-        class="group flex items-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 no-underline outline-none transition-colors duration-150 ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
+        class="group flex items-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 no-underline outline-none transition-[color,background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] hover:translate-x-0.5 focus-visible:ring-2 active:scale-[0.98]"
         :class="
           itemActive(settingsNavItem.name)
             ? 'border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] text-[var(--app-primary-strong)]'
@@ -68,7 +68,7 @@ function itemActive(name: string) {
         "
       >
         <span
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-[border-color,background-color,color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]"
           :class="
             itemActive(settingsNavItem.name)
               ? 'border-[var(--app-primary)] bg-[var(--app-surface)] text-[var(--app-primary)]'
