@@ -16,7 +16,7 @@ function itemActive(name: string) {
   >
     <RouterLink
       to="/"
-      class="mb-8 block truncate rounded-2xl px-2 py-1 text-lg font-extrabold tracking-tight text-[var(--app-text)] no-underline outline-none ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
+      class="mb-8 block truncate rounded-2xl px-2 py-1 text-2xl font-bold leading-tight tracking-tight font-[Fredoka,Nunito,sans-serif] text-[var(--app-text)] no-underline outline-none ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
     >
       Psychologist
     </RouterLink>

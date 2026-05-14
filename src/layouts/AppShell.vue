@@ -16,7 +16,7 @@ import { RouterLink, RouterView } from 'vue-router'
     >
       <RouterLink
         to="/"
-        class="min-w-0 truncate py-1 text-base font-extrabold tracking-tight text-[var(--app-text)] no-underline outline-none ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
+        class="min-w-0 truncate py-1 text-xl font-bold leading-tight tracking-tight font-[Fredoka,Nunito,sans-serif] text-[var(--app-text)] no-underline outline-none ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
       >
         Psychologist
       </RouterLink>
