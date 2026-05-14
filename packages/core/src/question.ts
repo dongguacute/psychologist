@@ -1,46 +1,4 @@
-import type { QuestionBankItem } from './types'
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-function resolveRepoRoot(): string {
-  let dir = dirname(fileURLToPath(import.meta.url))
-  for (;;) {
-    if (existsSync(join(dir, 'pnpm-workspace.yaml')))
-      return dir
-
-    const dataDir = join(dir, 'data')
-    if (existsSync(dataDir))
-      return dir
-
-    const parent = dirname(dir)
-    if (parent === dir)
-      throw new Error('无法定位仓库根目录（未发现 pnpm-workspace.yaml）。')
-    dir = parent
-  }
-}
-
-function readDataFile(
-  relativeSegments: readonly string[],
-  ext: '.md' | '.json',
-): string {
-  const root = resolveRepoRoot()
-  const dataRoot = join(root, 'data')
-  const base = join(dataRoot, ...relativeSegments.slice(0, -1))
-  const name = relativeSegments[relativeSegments.length - 1]
-
-  if (!relativeSegments.length)
-    throw new Error('readDataFile: empty path.')
-
-  if (!existsSync(dataRoot))
-    throw new Error(`数据目录不存在: ${dataRoot}`)
-
-  const filepath = join(base, `${name}${ext}`)
-  if (!existsSync(filepath))
-    throw new Error(`找不到内容文件: ${filepath}`)
-
-  return readFileSync(filepath, 'utf8')
-}
+import type { QuestionBankItem } from './types.js'
 
 function isRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x !== null && !Array.isArray(x)
@@ -50,7 +8,10 @@ function isStringArray(x: unknown): x is string[] {
   return Array.isArray(x) && x.every(i => typeof i === 'string')
 }
 
-function parseQuestionBankItem(raw: string): QuestionBankItem {
+/**
+ * 解析 `question.json` 原始文本；可在浏览器端对 `fetch` 结果调用。
+ */
+export function parseQuestionBankItem(raw: string): QuestionBankItem {
   let data: unknown
   try {
     data = JSON.parse(raw)
@@ -86,7 +47,7 @@ function parseQuestionBankItem(raw: string): QuestionBankItem {
     const oc = row.option_code
     const ot = row.option_text
     if (typeof oc !== 'string' || typeof ot !== 'string') {
-      throw new Error(
+      throw new TypeError(
         `题目 options[${idx}] 须包含字符串字段 option_code、option_text`,
       )
     }
@@ -142,47 +103,10 @@ function parseQuestionBankItem(raw: string): QuestionBankItem {
   const ch = data.chapter_id
   if (ch !== undefined) {
     if (typeof ch !== 'number' || !Number.isInteger(ch)) {
-      throw new Error('若提供 chapter_id，须为整数')
+      throw new TypeError('若提供 chapter_id，须为整数')
     }
     item.chapter_id = ch
   }
 
   return item
-}
-
-/**
- * 按课时 / 单元的目录 id，从仓库根目录 `data/{id}/` 读取文稿与题目并拼成提示用文本：
- * - `data/{id}/about.md`
- * - `data/{id}/question.json` — 结构见 {@link QuestionBankItem}
- *
- * 若 `question.json` 含可选字段 `chapter_id`，则必须与 `id`（目录名）一致。
- */
-export function input(id: number): string {
-  const folder = String(id)
-
-  const chapterBody = readDataFile([folder, 'about'], '.md').trimEnd()
-
-  const rawQuestion = readDataFile([folder, 'question'], '.json')
-  const question = parseQuestionBankItem(rawQuestion)
-
-  if (
-    question.chapter_id !== undefined
-    && question.chapter_id !== id
-  ) {
-    throw new Error(
-      `题目归属不一致: JSON chapter_id=${question.chapter_id}, 目录 id=${id}`,
-    )
-  }
-
-  const questionBody = JSON.stringify(question, null, 2)
-
-  return [
-    `## 课时内容 (${id})`,
-    '',
-    chapterBody,
-    '',
-    `## 题目 (${question.question_id})`,
-    '',
-    questionBody,
-  ].join('\n')
 }

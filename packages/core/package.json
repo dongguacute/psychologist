@@ -8,9 +8,17 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./input": {
-      "types": "./dist/input.d.ts",
-      "import": "./dist/input.js"
+    "./paths": {
+      "types": "./dist/paths.d.ts",
+      "import": "./dist/paths.js"
+    },
+    "./question": {
+      "types": "./dist/question.d.ts",
+      "import": "./dist/question.js"
+    },
+    "./repo": {
+      "types": "./dist/repo.d.ts",
+      "import": "./dist/repo.js"
     }
   },
   "files": [

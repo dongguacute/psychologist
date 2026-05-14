@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { BookOpen } from '@lucide/vue'
+import { RouterLink } from 'vue-router'
+
+import { TOPIC_REGISTRY } from '@/app/registry'
 </script>
 
 <template>
   <div
-    class="mx-auto max-w-3xl rounded-3xl border-2 border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-[0_6px_0_0_var(--app-border)] sm:p-8"
+    class="mx-auto max-w-3xl rounded-3xl border-2 border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-[0_6px_0_0_var(--app-border)] sm:p-8 lg:max-w-5xl"
   >
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
       <span
@@ -17,24 +20,34 @@ import { BookOpen } from '@lucide/vue'
           学习
         </h1>
         <p class="mt-2 font-bold leading-relaxed text-[var(--app-muted)]">
-          从这里继续课程内容或每日练习；需要查看打卡节奏时，切换到「日历」即可。
+          在下面选择课题，通过路由进入学习页（URL 形如
+          <code class="rounded-md bg-[var(--app-subtle)] px-1.5 py-0.5 text-[0.9em]">/learn/topics/…</code>）。
         </p>
       </div>
     </div>
 
-    <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-      <button
-        type="button"
-        class="rounded-2xl border-2 border-b-[5px] border-[var(--app-primary-depth)] bg-[var(--app-primary)] px-6 py-3 text-[15px] font-extrabold tracking-wide text-white shadow-[0_4px_0_0_var(--app-primary-depth)] transition active:translate-y-[2px] active:border-b-[3px] active:shadow-[0_2px_0_0_var(--app-primary-depth)]"
-      >
-        继续学习
-      </button>
-      <button
-        type="button"
-        class="rounded-2xl border-2 border-b-[5px] border-[var(--app-border-strong)] bg-[var(--app-surface)] px-6 py-3 text-[15px] font-extrabold tracking-wide text-[var(--app-muted)] shadow-[0_4px_0_0_var(--app-border)] transition hover:bg-[var(--app-hover)] active:translate-y-[2px] active:border-b-[3px] active:shadow-[0_2px_0_0_var(--app-border)]"
-      >
-        复习错题
-      </button>
-    </div>
+    <section
+      class="mt-8 border-t-2 border-dashed border-[var(--app-border)] pt-8"
+      aria-label="课题列表"
+    >
+      <h2 class="mb-5 text-[11px] font-extrabold uppercase tracking-[0.26em] text-[var(--app-muted)]">
+        可选课题
+      </h2>
+      <div class="flex flex-wrap gap-4">
+        <RouterLink
+          v-for="topic in TOPIC_REGISTRY"
+          :key="topic.topicId"
+          class="flex max-w-[16rem] min-w-[12rem] flex-1 flex-col items-start gap-3 rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] p-5 text-left font-extrabold text-[var(--app-text)] no-underline outline-none shadow-[0_4px_0_0_var(--app-border)] ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] transition hover:border-[var(--app-primary-ring)] hover:bg-[var(--app-primary-soft)] focus-visible:ring-2 active:translate-y-[2px] active:shadow-[0_2px_0_0_var(--app-border)]"
+          :to="topic.route"
+        >
+          <img
+            :src="topic.logo"
+            :alt="`${topic.name} logo`"
+            class="size-14 rounded-xl border-2 border-[var(--app-border)] bg-[var(--app-surface)] object-contain p-2"
+          >
+          <span class="truncate text-[15px] leading-snug">{{ topic.name }}</span>
+        </RouterLink>
+      </div>
+    </section>
   </div>
 </template>

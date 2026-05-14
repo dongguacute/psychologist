@@ -1,9 +1,11 @@
 import { appTitle } from '@psychologist/core'
 
 import { createApp } from 'vue'
+
 import { initTheme } from '@/theme/vue-store'
 import App from './App.vue'
 import router from './router'
+import '@/config/topic-registry'
 import './assets/main.css'
 
 document.title = appTitle()

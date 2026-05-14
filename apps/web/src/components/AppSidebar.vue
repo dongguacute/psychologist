@@ -1,10 +1,27 @@
 <script setup lang="ts">
+import { BookOpen, CalendarDays, Settings } from '@lucide/vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { primaryNavItems, settingsNavItem } from '@/config/main-nav'
+
+import { isLearnSectionRoute, ROUTE_NAMES } from '@/app/routes'
+
+const primaryNavItems = [
+  { to: '/', name: ROUTE_NAMES.learn, label: '学习', icon: BookOpen },
+  { to: '/calendar', name: ROUTE_NAMES.calendar, label: '日历', icon: CalendarDays },
+] as const
+
+const settingsNavItem = {
+  to: '/settings',
+  name: ROUTE_NAMES.settings,
+  label: '设置',
+  icon: Settings,
+} as const
 
 const route = useRoute()
 
 function itemActive(name: string) {
+  if (name === ROUTE_NAMES.learn)
+    return isLearnSectionRoute(route.name)
+
   return route.name === name
 }
 </script>
