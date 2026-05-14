@@ -52,26 +52,26 @@ function clearAllLocalData() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-lg space-y-6">
-    <div>
+  <div class="settings-page mx-auto max-w-lg">
+    <header class="flex flex-col gap-2.5">
       <h1 class="text-xl font-extrabold text-(--app-text) sm:text-2xl">
         设置
       </h1>
-      <p class="mt-1 font-bold text-(--app-muted)">
+      <p class="font-bold text-(--app-muted)">
         外观 · 当前界面为「{{ hint(resolvedScheme) }}」
       </p>
-    </div>
+    </header>
 
     <div
       class="rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-5 shadow-[0_6px_0_0_var(--app-border)] sm:p-6"
       role="radiogroup"
       aria-label="界面深浅色"
     >
-      <h2 class="mb-4 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted)">
+      <h2 class="mb-5 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted) sm:mb-6">
         界面深浅色
       </h2>
 
-      <ul class="flex flex-col gap-2">
+      <ul class="flex flex-col gap-3 sm:gap-3.5">
         <li v-for="opt in options" :key="opt.value">
           <button
             type="button"
@@ -116,20 +116,88 @@ function clearAllLocalData() {
     <div
       class="rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-5 shadow-[0_6px_0_0_var(--app-border)] sm:p-6"
     >
-      <h2 class="mb-4 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted)">
+      <h2 class="mb-5 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted) sm:mb-6">
         数据与隐私
       </h2>
-      <p class="text-sm font-bold leading-relaxed text-(--app-muted)">
+      <p class="text-sm font-bold leading-relaxed text-(--app-muted) sm:leading-loose">
         清除后，本应用在本浏览器中的全部本地数据都会被删除（含打卡记录、外观偏好等），且无法恢复。页面将自动刷新。
       </p>
       <button
         type="button"
-        class="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-b-[5px] border-(--app-border-strong) bg-(--app-subtle) px-4 py-3 text-[15px] font-extrabold tracking-wide text-(--app-text) shadow-[0_4px_0_0_var(--app-border)] transition hover:bg-(--app-hover) active:translate-y-[2px] active:border-b-[3px] active:shadow-[0_2px_0_0_var(--app-border)]"
+        class="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-b-[5px] border-(--app-border-strong) bg-(--app-subtle) px-4 py-3 text-[15px] font-extrabold tracking-wide text-(--app-text) shadow-[0_4px_0_0_var(--app-border)] transition hover:bg-(--app-hover) active:translate-y-[2px] active:border-b-[3px] active:shadow-[0_2px_0_0_var(--app-border)] sm:mt-7"
         @click="clearAllLocalData"
       >
         <Trash2 :size="20" :stroke-width="2.5" aria-hidden="true" />
         清除所有数据
       </button>
     </div>
+
+    <div
+      class="settings-notice-card rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-6 shadow-[0_6px_0_0_var(--app-border)] sm:p-8"
+    >
+      <h2 class="text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted)">
+        注意事项
+      </h2>
+      <p
+        class="text-[15px] font-bold text-pretty text-(--app-muted) sm:text-base"
+      >
+        本站所有内容仅为精神心理科普、家属相处方式学习参考，不构成医疗诊断、诊疗、用药及治疗建议。
+      </p>
+      <p
+        class="settings-notice-follow text-[15px] font-bold text-pretty text-(--app-muted) sm:text-base"
+      >
+        无法替代精神科医生、心理治疗师专业意见，如有情绪困扰、精神健康问题，请务必前往正规精神卫生医疗机构就诊。
+      </p>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 2.75rem;
+  padding-bottom: 3rem;
+}
+
+@media (width >= 640px) {
+  .settings-page {
+    row-gap: 3.5rem;
+    padding-bottom: 4rem;
+  }
+}
+
+.settings-notice-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.375rem;
+}
+
+@media (width >= 640px) {
+  .settings-notice-card {
+    gap: 1.75rem;
+  }
+}
+
+.settings-notice-card p {
+  margin: 0;
+  line-height: 2.1;
+}
+
+@media (width >= 640px) {
+  .settings-notice-card p {
+    line-height: 2.15;
+  }
+}
+
+.settings-notice-follow {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--app-border);
+}
+
+@media (width >= 640px) {
+  .settings-notice-follow {
+    padding-top: 1.5rem;
+  }
+}
+</style>
