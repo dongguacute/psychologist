@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { mainNavItems } from '@/config/main-nav'
+import { mobileNavItems } from '@/config/main-nav'
 import { RouterLink, useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -11,7 +11,7 @@ const route = useRoute()
     aria-label="主导航"
   >
     <ul class="flex items-stretch justify-around px-2">
-      <li v-for="item in mainNavItems" :key="item.name" class="min-w-0 flex-1">
+      <li v-for="item in mobileNavItems" :key="item.name" class="min-w-0 flex-1">
         <RouterLink
           :to="item.to"
           class="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-center no-underline outline-none ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] transition-colors focus-visible:ring-2"

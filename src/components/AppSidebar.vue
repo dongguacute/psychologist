@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { mainNavItems } from '@/config/main-nav'
+import { primaryNavItems, settingsNavItem } from '@/config/main-nav'
 import { RouterLink, useRoute } from 'vue-router'
 
 const route = useRoute()
+
+function itemActive(name: string) {
+  return route.name === name
+}
 </script>
 
 <template>
   <aside
-    class="hidden w-[clamp(11rem,22vw,15rem)] shrink-0 flex-col border-r-2 border-[var(--app-border)] bg-[var(--app-surface)] px-3 pb-6 pt-6 shadow-[var(--app-aside-edge-shadow)] md:flex lg:w-[15rem]"
+    class="hidden min-h-0 w-[280px] shrink-0 flex-col border-r-2 border-[var(--app-border)] bg-[var(--app-surface)] px-4 pb-6 pt-6 shadow-[var(--app-aside-edge-shadow)] lg:w-[304px] md:flex md:min-h-[100dvh]"
     aria-label="主导航"
   >
     <RouterLink
@@ -17,14 +21,14 @@ const route = useRoute()
       Psychologist
     </RouterLink>
 
-    <nav class="flex flex-1 flex-col gap-1.5" aria-label="页面">
+    <nav class="flex flex-1 flex-col gap-1.5" aria-label="主要功能">
       <RouterLink
-        v-for="item in mainNavItems"
+        v-for="item in primaryNavItems"
         :key="item.name"
         :to="item.to"
         class="group flex items-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 no-underline outline-none transition-colors duration-150 ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
         :class="
-          route.name === item.name
+          itemActive(item.name)
             ? 'border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] text-[var(--app-primary-strong)]'
             : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)]'
         "
@@ -32,7 +36,7 @@ const route = useRoute()
         <span
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
           :class="
-            route.name === item.name
+            itemActive(item.name)
               ? 'border-[var(--app-primary)] bg-[var(--app-surface)] text-[var(--app-primary)]'
               : 'border-[var(--app-border)] bg-[var(--app-subtle)] text-[var(--app-muted)] group-hover:border-[var(--app-border-strong)]'
           "
@@ -46,6 +50,40 @@ const route = useRoute()
         </span>
         <span class="min-w-0 truncate text-[15px] font-extrabold tracking-wide">
           {{ item.label }}
+        </span>
+      </RouterLink>
+    </nav>
+
+    <nav
+      class="mt-4 border-t-2 border-[var(--app-border)] pt-4"
+      aria-label="设置"
+    >
+      <RouterLink
+        :to="settingsNavItem.to"
+        class="group flex items-center gap-3 rounded-2xl border-2 border-transparent px-3 py-2.5 no-underline outline-none transition-colors duration-150 ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] focus-visible:ring-2"
+        :class="
+          itemActive(settingsNavItem.name)
+            ? 'border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] text-[var(--app-primary-strong)]'
+            : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)]'
+        "
+      >
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
+          :class="
+            itemActive(settingsNavItem.name)
+              ? 'border-[var(--app-primary)] bg-[var(--app-surface)] text-[var(--app-primary)]'
+              : 'border-[var(--app-border)] bg-[var(--app-subtle)] text-[var(--app-muted)] group-hover:border-[var(--app-border-strong)]'
+          "
+        >
+          <component
+            :is="settingsNavItem.icon"
+            :size="22"
+            :stroke-width="2.5"
+            aria-hidden="true"
+          />
+        </span>
+        <span class="min-w-0 truncate text-[15px] font-extrabold tracking-wide">
+          {{ settingsNavItem.label }}
         </span>
       </RouterLink>
     </nav>
