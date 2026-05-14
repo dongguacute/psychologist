@@ -7,7 +7,7 @@ const route = useRoute()
 
 <template>
   <nav
-    class="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[var(--app-border)] bg-[var(--app-surface)]/95 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgba(67,56,202,0.08)] backdrop-blur-md md:hidden"
+    class="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[var(--app-border)] bg-[var(--app-surface)]/95 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 shadow-[var(--app-nav-shadow)] backdrop-blur-md md:hidden"
     aria-label="主导航"
   >
     <ul class="flex items-stretch justify-around px-2">

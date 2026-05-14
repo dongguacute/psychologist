@@ -7,7 +7,7 @@ const route = useRoute()
 
 <template>
   <aside
-    class="hidden w-[clamp(11rem,22vw,15rem)] shrink-0 flex-col border-r-2 border-[var(--app-border)] bg-[var(--app-surface)] px-3 pb-6 pt-6 shadow-[4px_0_0_0_rgba(67,56,202,0.04)] md:flex lg:w-[15rem]"
+    class="hidden w-[clamp(11rem,22vw,15rem)] shrink-0 flex-col border-r-2 border-[var(--app-border)] bg-[var(--app-surface)] px-3 pb-6 pt-6 shadow-[var(--app-aside-edge-shadow)] md:flex lg:w-[15rem]"
     aria-label="主导航"
   >
     <RouterLink
