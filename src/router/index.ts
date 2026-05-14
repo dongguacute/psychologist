@@ -22,7 +22,7 @@ const router = createRouter({
           path: 'calendar',
           name: 'calendar',
           component: CalendarView,
-          meta: { title: '日历' },
+          meta: { title: '打卡日历' },
         },
         {
           path: 'settings',
