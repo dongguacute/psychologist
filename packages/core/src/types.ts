@@ -38,7 +38,7 @@ export type AnswerRule = AnswerRuleSingle | AnswerRuleMultiple
 
 export interface QuestionBankItem {
   question_id: number
-  /** 若填写，解析器可与章节目录 id 校验（见 `loadQuestionFromRepo`） */
+  /** 若填写，解析器可与章节目录 id 校验（见 `@psychologist/core/repo` 的 `loadQuestionFromRepo`） */
   chapter_id?: number
   question_type: QuestionType
   question_title: string

@@ -18,11 +18,7 @@ export {
   topicIndexPublicUrl,
 } from './topic-public.js'
 
-export {
-  chapterFolderIds,
-  loadQuestionFromRepo,
-  repoRootPath,
-} from './repo.js'
+/** Node（`fs`）专用：请使用 `@psychologist/core/repo`，勿从主入口引用，以免打入浏览器包。 */
 
 export type {
   AnswerRule,

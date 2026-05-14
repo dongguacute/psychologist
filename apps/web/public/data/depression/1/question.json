@@ -1,0 +1,25 @@
+{
+  "question_id": 1001,
+  "chapter_id": 1,
+  "question_type": "single",
+  "question_title": "以下关于抑郁说法中，更贴切科普用途的是？",
+  "options": [
+    {
+      "option_code": "A",
+      "option_text": "只要有几天心情不好，就可以诊断为抑郁症。"
+    },
+    {
+      "option_code": "B",
+      "option_text": "是否需专业关注，常需结合持续时间、严重程度与对日常功能的影响来理解。"
+    },
+    {
+      "option_code": "C",
+      "option_text": "抑郁症只能靠意志力扛过去，求助代表软弱。"
+    }
+  ],
+  "answer_rule": {
+    "type": "single",
+    "correct": ["B"],
+    "scoring_mode": "all_or_nothing"
+  }
+}
