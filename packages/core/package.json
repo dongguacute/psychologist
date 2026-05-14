@@ -7,9 +7,15 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./input": {
+      "types": "./dist/input.d.ts",
+      "import": "./dist/input.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch --preserveWatchOutput",
@@ -17,6 +23,7 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@types/node": "^22",
     "typescript": "~6.0.0"
   }
 }
