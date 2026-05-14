@@ -1,6 +1,6 @@
-import { computed } from 'vue'
-
 import type { ThemePreference } from '@/theme/constants'
+
+import { computed } from 'vue'
 import {
   setThemePreference as commitThemePreference,
   systemPrefersDark,

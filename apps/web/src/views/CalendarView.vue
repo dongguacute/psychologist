@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useCheckInDates, dateKeyFromDate } from '@/composables/useCheckInDates'
 import { CalendarDays, Check, ChevronLeft, ChevronRight } from '@lucide/vue'
 import { computed, ref } from 'vue'
+import { dateKeyFromDate, useCheckInDates } from '@/composables/useCheckInDates'
 
 const { isChecked, checkInToday, todayKey, checkedToday } = useCheckInDates()
 
@@ -14,7 +14,7 @@ const monthLabel = computed(() =>
 
 const weekdayLabels = ['一', '二', '三', '四', '五', '六', '日'] as const
 
-type Cell = { key: string | null; day: number | null; inMonth: boolean }
+interface Cell { key: string | null, day: number | null, inMonth: boolean }
 
 const calendarCells = computed((): Cell[] => {
   const y = viewMonth.value.getFullYear()

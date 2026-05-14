@@ -1,14 +1,19 @@
 {
   "name": "psychologist",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "preview": "turbo run preview",
     "test:unit": "turbo run test:unit",
-    "type-check": "turbo run type-check"
+    "type-check": "turbo run type-check",
+    "lint": "turbo run lint"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^9.0.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-format": "^2.0.1",
     "turbo": "^2.5.8"
   },
   "engines": {

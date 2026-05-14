@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ThemePreference } from '@/theme/constants'
-import { useThemePreference } from '@/composables/useThemePreference'
 import { MonitorSmartphone, Moon, Sun, Trash2 } from '@lucide/vue'
+import { useThemePreference } from '@/composables/useThemePreference'
 
 const { preference, resolvedScheme, setPreference } = useThemePreference()
 
@@ -35,6 +35,7 @@ function select(pref: ThemePreference) {
 }
 
 function clearAllLocalData() {
+  // eslint-disable-next-line no-alert -- destructive action needs a native confirm
   const ok = window.confirm(
     '确定要清除所有本地数据吗？\n\n将清空本应用在本浏览器中保存的全部内容（含打卡记录、主题设置等），且无法恢复。',
   )

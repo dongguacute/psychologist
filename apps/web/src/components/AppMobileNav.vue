@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { mobileNavItems } from '@/config/main-nav'
 import { RouterLink, useRoute } from 'vue-router'
+import { mobileNavItems } from '@/config/main-nav'
 
 const route = useRoute()
 </script>

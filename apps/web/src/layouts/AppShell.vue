@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
 import AppMobileNav from '@/components/AppMobileNav.vue'
 import AppSidebar from '@/components/AppSidebar.vue'
-import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>

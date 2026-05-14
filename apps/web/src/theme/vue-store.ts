@@ -1,6 +1,6 @@
-import { ref } from 'vue'
-
 import type { ThemePreference } from './constants'
+
+import { ref } from 'vue'
 import { readStoredThemePreference, writeStoredThemePreference } from './storage'
 
 export const themePreference = ref<ThemePreference>('system')

@@ -1,11 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     },
@@ -14,6 +16,7 @@
       "persistent": true
     },
     "type-check": {},
-    "test:unit": {}
+    "test:unit": {},
+    "lint": {}
   }
 }

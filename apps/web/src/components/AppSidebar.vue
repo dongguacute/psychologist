@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { primaryNavItems, settingsNavItem } from '@/config/main-nav'
 import { RouterLink, useRoute } from 'vue-router'
+import { primaryNavItems, settingsNavItem } from '@/config/main-nav'
 
 const route = useRoute()
 
