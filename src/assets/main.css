@@ -1,8 +1,9 @@
 @import './base.css';
 @import "tailwindcss";
 
-/* App shell theme — 暖陶土 / 奶油纸感底色 */
+/* App shell theme — 浅色（默认）暖陶土 / 奶油纸感 */
 :root {
+  color-scheme: light;
   --app-bg: #fdf8f3;
   --app-surface: #fffefb;
   --app-subtle: #faf5ee;
@@ -19,6 +20,27 @@
   --app-glow: rgba(217, 114, 84, 0.14);
   --app-nav-shadow: 0 -8px 24px rgba(143, 61, 44, 0.09);
   --app-aside-edge-shadow: 4px 0 0 0 rgba(143, 61, 44, 0.04);
+}
+
+/* 深色 — 暖棕背景，避免纯黑刺眼 */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --app-bg: #1f1b18;
+  --app-surface: #2c2622;
+  --app-subtle: #352e29;
+  --app-hover: #3e3630;
+  --app-border: #4d433c;
+  --app-border-strong: #62574f;
+  --app-text: #f4ebe6;
+  --app-muted: #b9a99f;
+  --app-primary: #ea8f73;
+  --app-primary-depth: #c47156;
+  --app-primary-soft: #4a322a;
+  --app-primary-strong: #ffd5c8;
+  --app-primary-ring: #a66252;
+  --app-glow: rgba(234, 143, 115, 0.14);
+  --app-nav-shadow: 0 -8px 28px rgba(0, 0, 0, 0.45);
+  --app-aside-edge-shadow: 4px 0 0 0 rgba(0, 0, 0, 0.35);
 }
 
 body {
