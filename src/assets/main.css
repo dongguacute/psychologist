@@ -1,6 +1,24 @@
 @import './base.css';
 @import "tailwindcss";
 
+/* App shell theme — 紫靛主色 + 中性灰，便于侧边栏 / 顶栏 / Tab 共用 */
+:root {
+  --app-bg: #eef1fb;
+  --app-surface: #ffffff;
+  --app-subtle: #f8fafc;
+  --app-hover: #f1f5f9;
+  --app-border: #e2e8f0;
+  --app-border-strong: #cbd5e1;
+  --app-text: #1e293b;
+  --app-muted: #64748b;
+  --app-primary: #5c59f7;
+  --app-primary-depth: #4540c9;
+  --app-primary-soft: #e9e7ff;
+  --app-primary-strong: #3730a3;
+  --app-primary-ring: #a5b4fc;
+  --app-glow: rgba(92, 89, 247, 0.14);
+}
+
 #app {
   min-height: 100vh;
 }

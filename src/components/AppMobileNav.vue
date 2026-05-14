@@ -1,0 +1,46 @@
+<script setup lang="ts">
+import { mainNavItems } from '@/config/main-nav'
+import { RouterLink, useRoute } from 'vue-router'
+
+const route = useRoute()
+</script>
+
+<template>
+  <nav
+    class="fixed inset-x-0 bottom-0 z-40 border-t-2 border-[var(--app-border)] bg-[var(--app-surface)]/95 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgba(67,56,202,0.08)] backdrop-blur-md md:hidden"
+    aria-label="主导航"
+  >
+    <ul class="flex items-stretch justify-around px-2">
+      <li v-for="item in mainNavItems" :key="item.name" class="min-w-0 flex-1">
+        <RouterLink
+          :to="item.to"
+          class="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-center no-underline outline-none ring-[var(--app-primary)] ring-offset-2 ring-offset-[var(--app-surface)] transition-colors focus-visible:ring-2"
+          :class="
+            route.name === item.name
+              ? 'text-[var(--app-primary-strong)]'
+              : 'text-[var(--app-muted)] hover:text-[var(--app-primary)]'
+          "
+        >
+          <span
+            class="flex h-11 w-14 items-center justify-center rounded-2xl border-2 transition-colors"
+            :class="
+              route.name === item.name
+                ? 'border-[var(--app-primary)] bg-[var(--app-primary-soft)] text-[var(--app-primary)]'
+                : 'border-transparent bg-transparent'
+            "
+          >
+            <component
+              :is="item.icon"
+              :size="24"
+              :stroke-width="2.25"
+              aria-hidden="true"
+            />
+          </span>
+          <span class="truncate text-[11px] font-extrabold tracking-wide">
+            {{ item.label }}
+          </span>
+        </RouterLink>
+      </li>
+    </ul>
+  </nav>
+</template>

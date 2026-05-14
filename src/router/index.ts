@@ -1,13 +1,36 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+import AppShell from '@/layouts/AppShell.vue'
+import CalendarView from '@/views/CalendarView.vue'
+import HomeView from '@/views/HomeView.vue'
+import PlaceholderView from '@/views/PlaceholderView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      component: AppShell,
+      children: [
+        {
+          path: '',
+          name: 'learn',
+          component: HomeView,
+          meta: { title: '学习' },
+        },
+        {
+          path: 'calendar',
+          name: 'calendar',
+          component: CalendarView,
+          meta: { title: '日历' },
+        },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: PlaceholderView,
+          meta: { title: '设置' },
+        },
+      ],
     },
   ],
 })
