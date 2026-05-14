@@ -79,14 +79,50 @@ import MarkdownParseSample from '@/content/markdown-parse-sample.md'
   color: var(--app-primary);
 }
 
+/* Tailwind Preflight 会去掉 ul/ol 的 list-style，这里为正文预览恢复列表外观 */
 .markdown-test-preview :deep(.markdown-test-prose ul),
 .markdown-test-preview :deep(.markdown-test-prose ol) {
   margin: 0.75em 0;
-  padding-left: 1.35em;
+  padding-left: 1.5em;
+  list-style-position: outside;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose ul) {
+  list-style-type: disc;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose ol) {
+  list-style-type: decimal;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose ul ul) {
+  list-style-type: circle;
+  margin: 0.35em 0;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose ul ul ul) {
+  list-style-type: square;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose ol ol) {
+  list-style-type: lower-alpha;
 }
 
 .markdown-test-preview :deep(.markdown-test-prose li) {
   margin: 0.35em 0;
+  display: list-item;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose li > p) {
+  margin: 0.35em 0;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose li > p:first-child) {
+  margin-top: 0;
+}
+
+.markdown-test-preview :deep(.markdown-test-prose li > p:last-child) {
+  margin-bottom: 0;
 }
 
 .markdown-test-preview :deep(.markdown-test-prose blockquote) {
