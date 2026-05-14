@@ -12,6 +12,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@lucide/vue": "^1.16.0",
     "@tailwindcss/vite": "^4.3.0",
     "motion-v": "^2.2.1",
     "tailwindcss": "^4.3.0",
