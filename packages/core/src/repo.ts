@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 
 import { fileURLToPath } from 'node:url'
 import { assertSafeTopicFolder, DATA_DIRECTORY_NAME } from './paths.js'
-import { parseQuestionBankItem } from './question.js'
+import { parseQuestionBankItems } from './question.js'
 
 function resolveRepoRoot(): string {
   let dir = dirname(fileURLToPath(import.meta.url))
@@ -63,13 +63,13 @@ export function chapterFolderIds(topicFolder: string): number[] {
 }
 
 /**
- * 从仓库 `data/{topicFolder}/{chapterId}/question.json` 读取并解析题目。
- * （仅 Node；浏览器请 `fetch` + {@link parseQuestionBankItem}。）
+ * 从仓库 `data/{topicFolder}/{chapterId}/question.json` 读取并解析题目列表（可含多题）。
+ * （仅 Node；浏览器请 `fetch` + {@link parseQuestionBankItems}。）
  */
-export function loadQuestionFromRepo(
+export function loadQuestionsFromRepo(
   topicFolder: string,
   chapterId: number,
-): QuestionBankItem {
+): QuestionBankItem[] {
   assertSafeTopicFolder(topicFolder)
   if (!Number.isInteger(chapterId))
     throw new TypeError('chapterId 须为整数')
@@ -89,18 +89,7 @@ export function loadQuestionFromRepo(
     throw new Error(`找不到题目文件: ${path}`)
 
   const raw = readFileSync(path, 'utf8')
-  const question = parseQuestionBankItem(raw)
-
-  if (
-    question.chapter_id !== undefined
-    && question.chapter_id !== chapterId
-  ) {
-    throw new Error(
-      `题目归属不一致: JSON chapter_id=${question.chapter_id}, 章节目录 id=${chapterId}`,
-    )
-  }
-
-  return question
+  return parseQuestionBankItems(raw, chapterId)
 }
 
 /** 仓库根绝对路径（仅 Node，供工具链偶尔需要）。 */

@@ -7,10 +7,19 @@ export type TopicLearnPhase = 'intro' | 'study'
 /** 学习阶段的界面：先看正文还是先答题面板 */
 export type TopicLearnStudySubMode = 'read' | 'quiz'
 
+/** 单道题的作答快照（单题章节存于 {@link TopicLearnQuizChapterState} 顶层；多题时存于 byQuestionId） */
+export interface TopicLearnQuizQuestionState {
+  selectedCodes: string[]
+  submitted: boolean
+  resultCorrect: boolean | null
+}
+
 export interface TopicLearnQuizChapterState {
   selectedCodes: string[]
   submitted: boolean
   resultCorrect: boolean | null
+  /** 多题时按 question_id 存各题；与顶层字段并存时，多题优先读本字段 */
+  byQuestionId?: Record<string, TopicLearnQuizQuestionState>
 }
 
 export interface TopicLearnProgressV1 {
@@ -26,6 +35,23 @@ function storageKey(topicId: string): string {
   return `${TOPIC_LEARN_STORAGE_KEY_PREFIX}${topicId}`
 }
 
+function isQuizQuestionState(x: unknown): x is TopicLearnQuizQuestionState {
+  if (typeof x !== 'object' || x === null) {
+    return false
+  }
+  const o = x as Record<string, unknown>
+  if (!Array.isArray(o.selectedCodes) || !o.selectedCodes.every(i => typeof i === 'string')) {
+    return false
+  }
+  if (typeof o.submitted !== 'boolean') {
+    return false
+  }
+  if (o.resultCorrect !== null && typeof o.resultCorrect !== 'boolean') {
+    return false
+  }
+  return true
+}
+
 function isQuizState(x: unknown): x is TopicLearnQuizChapterState {
   if (typeof x !== 'object' || x === null) {
     return false
@@ -39,6 +65,16 @@ function isQuizState(x: unknown): x is TopicLearnQuizChapterState {
   }
   if (o.resultCorrect !== null && typeof o.resultCorrect !== 'boolean') {
     return false
+  }
+  if (o.byQuestionId !== undefined) {
+    if (typeof o.byQuestionId !== 'object' || o.byQuestionId === null) {
+      return false
+    }
+    for (const v of Object.values(o.byQuestionId)) {
+      if (!isQuizQuestionState(v)) {
+        return false
+      }
+    }
   }
   return true
 }

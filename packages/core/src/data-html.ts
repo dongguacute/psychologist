@@ -26,7 +26,7 @@ export function wrapJsonAsDataHtml(jsonRaw: string): string {
 }
 
 /**
- * 从 {@link wrapJsonAsDataHtml} 生成的文档中取出 JSON 原文（供 `JSON.parse` / {@link parseQuestionBankItem}）。
+ * 从 {@link wrapJsonAsDataHtml} 生成的文档中取出 JSON 原文（供 {@link parseQuestionBankItems} / {@link parseQuestionBankItem} 使用）。
  */
 export function extractEmbeddedJsonFromDataHtml(html: string): string {
   const id = EMBEDDED_JSON_SCRIPT_ID

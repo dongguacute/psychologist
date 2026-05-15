@@ -8,22 +8,24 @@ function isStringArray(x: unknown): x is string[] {
   return Array.isArray(x) && x.every(i => typeof i === 'string')
 }
 
-/**
- * 解析 `question.json` 原始文本；可在浏览器端对 `fetch` 结果调用。
- */
-export function parseQuestionBankItem(raw: string): QuestionBankItem {
-  let data: unknown
+function parseJsonRoot(raw: string): unknown {
   try {
-    data = JSON.parse(raw)
+    return JSON.parse(raw)
   }
   catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
     throw new Error(`题目 JSON 解析失败: ${msg}`)
   }
+}
 
-  if (!isRecord(data))
-    throw new Error('题目 JSON 须为 JSON 对象')
-
+/**
+ * 将单个题目对象解析为 {@link QuestionBankItem}。
+ * `chapterIdForValidation` 若传入，则当题目含 `chapter_id` 时须与其一致。
+ */
+export function parseQuestionBankData(
+  data: Record<string, unknown>,
+  chapterIdForValidation?: number,
+): QuestionBankItem {
   const question_id = data.question_id
   if (typeof question_id !== 'number' || !Number.isInteger(question_id))
     throw new Error('题目 JSON 缺少合法字段 question_id（整数）')
@@ -106,7 +108,95 @@ export function parseQuestionBankItem(raw: string): QuestionBankItem {
       throw new TypeError('若提供 chapter_id，须为整数')
     }
     item.chapter_id = ch
+    if (
+      chapterIdForValidation !== undefined
+      && ch !== chapterIdForValidation
+    ) {
+      throw new Error(
+        `题目归属不一致: JSON chapter_id=${ch}, 章节目录 id=${chapterIdForValidation}`,
+      )
+    }
   }
 
   return item
+}
+
+function normalizeQuestionListPayload(
+  data: unknown,
+): Record<string, unknown>[] {
+  if (Array.isArray(data)) {
+    if (data.length === 0) {
+      throw new Error('题目列表不能为空')
+    }
+    return data.map((row, i) => {
+      if (!isRecord(row)) {
+        throw new Error(`题目数组[${i}] 须为 JSON 对象`)
+      }
+      return row
+    })
+  }
+
+  if (!isRecord(data)) {
+    throw new Error('题目 JSON 须为对象、{ questions: [] } 或题目数组')
+  }
+
+  const wrapped = data.questions
+  if (Array.isArray(wrapped)) {
+    if (wrapped.length === 0) {
+      throw new Error('questions 数组不能为空')
+    }
+    return wrapped.map((row, i) => {
+      if (!isRecord(row)) {
+        throw new Error(`questions[${i}] 须为 JSON 对象`)
+      }
+      return row
+    })
+  }
+
+  if (typeof data.question_id === 'number') {
+    return [data]
+  }
+
+  throw new Error(
+    '题目 JSON 须为单个题目对象、题目数组，或含 questions 数组的对象',
+  )
+}
+
+/**
+ * 解析 `question.json` 原始文本，支持：
+ * - 单题：`{ "question_id": … }`
+ * - 多题：题目数组 `[{ … }, { … }]` 或 `{ "questions": [{ … }, { … }] }`
+ *
+ * `chapterIdForValidation` 传入时，每道题若含 `chapter_id` 会校验与章节目录一致。
+ */
+export function parseQuestionBankItems(
+  raw: string,
+  chapterIdForValidation?: number,
+): QuestionBankItem[] {
+  const rows = normalizeQuestionListPayload(parseJsonRoot(raw))
+  const seen = new Set<number>()
+  const items: QuestionBankItem[] = []
+  for (const row of rows) {
+    const item = parseQuestionBankData(row, chapterIdForValidation)
+    if (seen.has(item.question_id)) {
+      throw new Error(`题目 question_id 重复: ${item.question_id}`)
+    }
+    seen.add(item.question_id)
+    items.push(item)
+  }
+  return items
+}
+
+/**
+ * 解析 `question.json` 原始文本（**恰好一道题**）；可在浏览器端对 `fetch` 结果调用。
+ * 同一文件含多题时请改用 {@link parseQuestionBankItems}。
+ */
+export function parseQuestionBankItem(raw: string): QuestionBankItem {
+  const items = parseQuestionBankItems(raw)
+  if (items.length !== 1) {
+    throw new Error(
+      `本文件含 ${items.length} 道题，请使用 parseQuestionBankItems`,
+    )
+  }
+  return items[0]!
 }

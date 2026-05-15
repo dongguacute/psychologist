@@ -15,12 +15,16 @@ export {
   wrapJsonAsDataHtml,
 } from './data-html.js'
 
-export { parseQuestionBankItem } from './question.js'
+export {
+  parseQuestionBankData,
+  parseQuestionBankItem,
+  parseQuestionBankItems,
+} from './question.js'
 
 export {
   chapterAboutPublicUrl,
   chapterMainPublicUrl,
-  fetchChapterQuestion,
+  fetchChapterQuestions,
   topicIndexPublicUrl,
 } from './topic-public.js'
 

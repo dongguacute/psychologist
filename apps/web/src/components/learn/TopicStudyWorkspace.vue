@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { QuestionBankItem, RegisteredTopic } from '@psychologist/core'
-import type { TopicLearnProgressV1, TopicLearnStudySubMode } from '@/lib/topicLearnProgressStorage'
+import type {
+  TopicLearnProgressV1,
+  TopicLearnQuizChapterState,
+  TopicLearnStudySubMode,
+} from '@/lib/topicLearnProgressStorage'
 import { BookOpen, ClipboardList } from '@lucide/vue'
 import {
   chapterMainPublicUrl,
-  fetchChapterQuestion,
+  fetchChapterQuestions,
   topicIndexPublicUrl,
 } from '@psychologist/core'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
@@ -38,22 +42,178 @@ const selectedCodes = ref<string[]>([])
 const submitted = ref(false)
 const resultCorrect = ref<boolean | null>(null)
 
+const questionItems = ref<QuestionBankItem[]>([])
+const activeQuizIndex = ref(0)
+
+const currentQuestion = computed(() => {
+  const items = questionItems.value
+  const i = activeQuizIndex.value
+  if (i < 0 || i >= items.length) {
+    return null
+  }
+  return items[i] ?? null
+})
+
+const quizCount = computed(() => questionItems.value.length)
+const hasPrevQuizQuestion = computed(() => activeQuizIndex.value > 0)
+const hasNextQuizQuestion = computed(
+  () => activeQuizIndex.value < questionItems.value.length - 1,
+)
+
+function emptyQuestionUi() {
+  selectedCodes.value = []
+  submitted.value = false
+  resultCorrect.value = null
+}
+
+function persistCurrentQuestionIntoChapterMap(ch: number) {
+  const items = questionItems.value
+  const idx = activeQuizIndex.value
+  const q = items[idx]
+  if (!q || items.length === 0) {
+    return
+  }
+
+  if (items.length === 1) {
+    quizByChapterMap.value = {
+      ...quizByChapterMap.value,
+      [String(ch)]: {
+        selectedCodes: [...selectedCodes.value],
+        submitted: submitted.value,
+        resultCorrect: resultCorrect.value,
+      },
+    }
+    return
+  }
+
+  const cur = quizByChapterMap.value[String(ch)] ?? {
+    selectedCodes: [],
+    submitted: false,
+    resultCorrect: null,
+  }
+  const byQuestionId = { ...cur.byQuestionId }
+  byQuestionId[String(q.question_id)] = {
+    selectedCodes: [...selectedCodes.value],
+    submitted: submitted.value,
+    resultCorrect: resultCorrect.value,
+  }
+  quizByChapterMap.value = {
+    ...quizByChapterMap.value,
+    [String(ch)]: {
+      selectedCodes: [],
+      submitted: false,
+      resultCorrect: null,
+      byQuestionId,
+    },
+  }
+}
+
+function applyQuizStateForChapter(ch: number) {
+  const items = questionItems.value
+  if (items.length === 0) {
+    emptyQuestionUi()
+    return
+  }
+
+  if (items.length === 1) {
+    const saved = quizByChapterMap.value[String(ch)]
+    selectedCodes.value = saved ? [...saved.selectedCodes] : []
+    submitted.value = saved?.submitted ?? false
+    resultCorrect.value = saved?.resultCorrect ?? null
+    activeQuizIndex.value = 0
+    return
+  }
+
+  let bucket = quizByChapterMap.value[String(ch)]
+  if (
+    bucket
+    && !bucket.byQuestionId
+    && (bucket.selectedCodes.length > 0 || bucket.submitted)
+  ) {
+    const firstId = items[0]?.question_id
+    if (firstId !== undefined) {
+      const migrated: TopicLearnQuizChapterState = {
+        selectedCodes: [],
+        submitted: false,
+        resultCorrect: null,
+        byQuestionId: {
+          [String(firstId)]: {
+            selectedCodes: [...bucket.selectedCodes],
+            submitted: bucket.submitted,
+            resultCorrect: bucket.resultCorrect,
+          },
+        },
+      }
+      quizByChapterMap.value = {
+        ...quizByChapterMap.value,
+        [String(ch)]: migrated,
+      }
+      bucket = migrated
+    }
+  }
+
+  activeQuizIndex.value = Math.min(
+    activeQuizIndex.value,
+    items.length - 1,
+  )
+  const q = items[activeQuizIndex.value]
+  if (!q) {
+    emptyQuestionUi()
+    return
+  }
+  const st = bucket?.byQuestionId?.[String(q.question_id)]
+  if (st) {
+    selectedCodes.value = [...st.selectedCodes]
+    submitted.value = st.submitted
+    resultCorrect.value = st.resultCorrect
+  }
+  else {
+    emptyQuestionUi()
+  }
+}
+
+function setActiveQuizIndex(next: number) {
+  const items = questionItems.value
+  if (next < 0 || next >= items.length) {
+    return
+  }
+  if (next === activeQuizIndex.value) {
+    return
+  }
+  const ch = activeChapterId.value
+  if (ch == null) {
+    return
+  }
+  persistCurrentQuestionIntoChapterMap(ch)
+  activeQuizIndex.value = next
+  const q = items[next]
+  if (!q) {
+    return
+  }
+  const bucket = quizByChapterMap.value[String(ch)]
+  const st = bucket?.byQuestionId?.[String(q.question_id)]
+  if (st) {
+    selectedCodes.value = [...st.selectedCodes]
+    submitted.value = st.submitted
+    resultCorrect.value = st.resultCorrect
+  }
+  else {
+    emptyQuestionUi()
+  }
+  saveProgress()
+}
+
 function buildSnapshot(): TopicLearnProgressV1 {
-  const map = { ...quizByChapterMap.value }
   const ch = activeChapterId.value
   if (ch != null && phase.value === 'study') {
-    map[String(ch)] = {
-      selectedCodes: [...selectedCodes.value],
-      submitted: submitted.value,
-      resultCorrect: resultCorrect.value,
-    }
+    persistCurrentQuestionIntoChapterMap(ch)
   }
   return {
     v: 1,
     phase: phase.value,
     activeChapterId: activeChapterId.value,
     studySubMode: phase.value === 'study' ? studySubMode.value : undefined,
-    quizByChapter: map,
+    quizByChapter: { ...quizByChapterMap.value },
   }
 }
 
@@ -197,17 +357,11 @@ function selectChapter(cid: number) {
   }
   const prev = activeChapterId.value
   if (prev != null && phase.value === 'study') {
-    quizByChapterMap.value = {
-      ...quizByChapterMap.value,
-      [String(prev)]: {
-        selectedCodes: [...selectedCodes.value],
-        submitted: submitted.value,
-        resultCorrect: resultCorrect.value,
-      },
-    }
+    persistCurrentQuestionIntoChapterMap(prev)
   }
   activeChapterId.value = cid
   studySubMode.value = 'read'
+  activeQuizIndex.value = 0
 }
 
 const mainBodyHtml = ref('')
@@ -243,30 +397,16 @@ watch(
   { immediate: true },
 )
 
-const questionItem = ref<QuestionBankItem | null>(null)
 const quizLoadState = ref<'idle' | 'loading' | 'ready' | 'missing' | 'error'>(
   'idle',
 )
 const quizErr = ref<string | null>(null)
 
-function applyQuizStateFromMap(ch: number) {
-  const savedQuiz = quizByChapterMap.value[String(ch)]
-  if (savedQuiz) {
-    selectedCodes.value = [...savedQuiz.selectedCodes]
-    submitted.value = savedQuiz.submitted
-    resultCorrect.value = savedQuiz.resultCorrect
-  }
-  else {
-    selectedCodes.value = []
-    submitted.value = false
-    resultCorrect.value = null
-  }
-}
-
 watch(
   [activeChapterId, () => props.topicMeta.topicId, phase],
   async ([ch, tid, ph]) => {
-    questionItem.value = null
+    questionItems.value = []
+    activeQuizIndex.value = 0
     quizErr.value = null
     selectedCodes.value = []
     submitted.value = false
@@ -279,9 +419,9 @@ watch(
 
     quizLoadState.value = 'loading'
     try {
-      questionItem.value = await fetchChapterQuestion(tid, ch)
+      questionItems.value = await fetchChapterQuestions(tid, ch)
       quizLoadState.value = 'ready'
-      applyQuizStateFromMap(ch)
+      applyQuizStateForChapter(ch)
       saveProgress()
     }
     catch (e) {
@@ -293,6 +433,7 @@ watch(
         quizLoadState.value = 'error'
         quizErr.value = msg
       }
+      questionItems.value = []
       selectedCodes.value = []
       submitted.value = false
       resultCorrect.value = null
@@ -307,7 +448,7 @@ function isOptionSelected(code: string): boolean {
 }
 
 function onPickOption(code: string) {
-  const q = questionItem.value
+  const q = currentQuestion.value
   if (!q) {
     return
   }
@@ -331,7 +472,7 @@ function onPickOption(code: string) {
 }
 
 function submitAnswer() {
-  const q = questionItem.value
+  const q = currentQuestion.value
   if (!q) {
     return
   }
@@ -355,7 +496,7 @@ function submitAnswer() {
 }
 
 const canSubmit = computed(() => {
-  const q = questionItem.value
+  const q = currentQuestion.value
   if (!q || submitted.value) {
     return false
   }
@@ -633,10 +774,10 @@ const studyTabActiveClass
                     第 {{ activeChapterId }} 章
                   </span>
                   <span
-                    v-if="quizLoadState === 'ready' && questionItem"
+                    v-if="quizLoadState === 'ready' && currentQuestion"
                     class="inline-flex items-center rounded-xl border-2 border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-[var(--app-primary-strong)]"
                   >
-                    {{ questionItem.question_type === 'single' ? '单选题' : '多选题' }}
+                    {{ currentQuestion.question_type === 'single' ? '单选题' : '多选题' }}
                   </span>
                 </div>
               </div>
@@ -666,23 +807,52 @@ const studyTabActiveClass
                 加载题目失败：<span class="font-mono text-[13px]">{{ quizErr }}</span>
               </div>
 
-              <template v-else-if="quizLoadState === 'ready' && questionItem">
+              <template v-else-if="quizLoadState === 'ready' && currentQuestion">
+                <div
+                  v-if="quizCount > 1"
+                  class="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] px-4 py-3 sm:px-5"
+                >
+                  <span class="text-sm font-extrabold text-[var(--app-text)]">
+                    第 {{ activeQuizIndex + 1 }} / {{ quizCount }} 题
+                  </span>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      :class="chapterNavBtnClass"
+                      class="border-[var(--app-border)] shadow-none"
+                      :disabled="!hasPrevQuizQuestion"
+                      @click="setActiveQuizIndex(activeQuizIndex - 1)"
+                    >
+                      上一题
+                    </button>
+                    <button
+                      type="button"
+                      :class="chapterNavBtnClass"
+                      class="border-[var(--app-border)] shadow-none"
+                      :disabled="!hasNextQuizQuestion"
+                      @click="setActiveQuizIndex(activeQuizIndex + 1)"
+                    >
+                      下一题
+                    </button>
+                  </div>
+                </div>
+
                 <div class="mt-8 space-y-3">
                   <p class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[var(--app-primary-strong)]">
                     巩固练习
                   </p>
                   <h3 class="text-pretty text-xl font-black leading-snug text-[var(--app-text)] sm:text-2xl">
-                    {{ questionItem.question_title }}
+                    {{ currentQuestion.question_title }}
                   </h3>
                   <p class="text-xs font-bold text-[var(--app-muted)]">
-                    {{ questionItem.question_type === 'single' ? '请选择最符合的一项。' : '可选择多项。' }}
+                    {{ currentQuestion.question_type === 'single' ? '请选择最符合的一项。' : '可选择多项。' }}
                   </p>
                 </div>
 
                 <ul class="relative mt-8 space-y-3">
                   <li
-                    v-for="opt in questionItem.options"
-                    :key="opt.option_code"
+                    v-for="opt in currentQuestion.options"
+                    :key="`${currentQuestion.question_id}-${opt.option_code}`"
                   >
                     <label
                       class="flex cursor-pointer items-start gap-4 rounded-2xl border-2 px-4 py-4 transition-[border-color,background-color,box-shadow,transform] duration-200 sm:gap-5 sm:px-5 sm:py-[1.125rem]"
@@ -704,8 +874,8 @@ const studyTabActiveClass
                       </span>
                       <input
                         class="sr-only"
-                        :type="questionItem.question_type === 'single' ? 'radio' : 'checkbox'"
-                        :name="`q-${questionItem.question_id}`"
+                        :type="currentQuestion.question_type === 'single' ? 'radio' : 'checkbox'"
+                        :name="`q-${currentQuestion.question_id}`"
                         :checked="isOptionSelected(opt.option_code)"
                         @click.prevent="onPickOption(opt.option_code)"
                       >

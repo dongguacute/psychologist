@@ -1,6 +1,6 @@
 import { extractEmbeddedJsonFromDataHtml } from './data-html.js'
 import { chapterAssetPathsRelativeToData, toPublicDataUrl } from './paths.js'
-import { parseQuestionBankItem } from './question.js'
+import { parseQuestionBankItems } from './question.js'
 import type { QuestionBankItem } from './types.js'
 
 export function topicIndexPublicUrl(topicId: string, base = '/data'): string {
@@ -26,11 +26,11 @@ export function chapterAboutPublicUrl(
   return toPublicDataUrl(about, base)
 }
 
-export async function fetchChapterQuestion(
+export async function fetchChapterQuestions(
   topicId: string,
   chapterId: number,
   base = '/data',
-): Promise<QuestionBankItem> {
+): Promise<QuestionBankItem[]> {
   const { questionHtml } = chapterAssetPathsRelativeToData(topicId, chapterId)
   const url = toPublicDataUrl(questionHtml, base)
   const res = await fetch(url)
@@ -40,5 +40,8 @@ export async function fetchChapterQuestion(
     )
   }
   const html = await res.text()
-  return parseQuestionBankItem(extractEmbeddedJsonFromDataHtml(html))
+  return parseQuestionBankItems(
+    extractEmbeddedJsonFromDataHtml(html),
+    chapterId,
+  )
 }
