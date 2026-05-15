@@ -7,6 +7,7 @@ import type {
 } from '@/lib/topicLearnProgressStorage'
 import { BookOpen, ClipboardList } from '@lucide/vue'
 import {
+  chapterAboutPublicUrl,
   chapterMainPublicUrl,
   fetchChapterQuestions,
   topicIndexPublicUrl,
@@ -374,6 +375,11 @@ function goNextChapter() {
   }
 }
 
+function continueToNextChapterFromSummary() {
+  playSfx(clickSfx)
+  goNextChapter()
+}
+
 function selectChapter(cid: number) {
   if (activeChapterId.value === cid) {
     return
@@ -462,6 +468,97 @@ watch(
       submitted.value = false
       resultCorrect.value = null
       saveProgress()
+    }
+  },
+  { immediate: true },
+)
+
+const aboutBodyHtml = ref('')
+const aboutLoading = ref(false)
+const aboutError = ref<string | null>(null)
+
+/** 本章所有题目均已提交且判对时，视为测验完成，可展示 about 小结 */
+function isChapterQuizAllCorrect(
+  items: QuestionBankItem[],
+  ch: number,
+  map: TopicLearnProgressV1['quizByChapter'],
+): boolean {
+  if (items.length === 0) {
+    return false
+  }
+  const bucket = map[String(ch)]
+  if (!bucket) {
+    return false
+  }
+  if (items.length === 1) {
+    return bucket.submitted === true && bucket.resultCorrect === true
+  }
+  const byId = bucket.byQuestionId
+  if (!byId) {
+    return false
+  }
+  for (const q of items) {
+    const st = byId[String(q.question_id)]
+    if (!st || st.submitted !== true || st.resultCorrect !== true) {
+      return false
+    }
+  }
+  return true
+}
+
+const quizChapterFullyCorrect = computed(() => {
+  if (quizLoadState.value !== 'ready') {
+    return false
+  }
+  const ch = activeChapterId.value
+  if (ch == null) {
+    return false
+  }
+  return isChapterQuizAllCorrect(
+    questionItems.value,
+    ch,
+    quizByChapterMap.value,
+  )
+})
+
+watch(
+  [
+    activeChapterId,
+    () => props.topicMeta.topicId,
+    phase,
+    studySubMode,
+    quizChapterFullyCorrect,
+    quizLoadState,
+  ],
+  async ([ch, tid, ph, sub, cleared, qLoad]) => {
+    aboutBodyHtml.value = ''
+    aboutError.value = null
+    if (
+      ph !== 'study'
+      || sub !== 'quiz'
+      || ch == null
+      || !cleared
+      || qLoad !== 'ready'
+    ) {
+      aboutLoading.value = false
+      return
+    }
+
+    aboutLoading.value = true
+    try {
+      const url = chapterAboutPublicUrl(tid, ch)
+      const res = await fetch(url)
+      if (!res.ok) {
+        throw new Error(`${res.status} ${res.statusText} — ${url}`)
+      }
+      aboutBodyHtml.value = await res.text()
+    }
+    catch (e) {
+      const msg = e instanceof Error ? e.message : String(e)
+      aboutError.value = msg
+    }
+    finally {
+      aboutLoading.value = false
     }
   },
   { immediate: true },
@@ -829,7 +926,13 @@ const studyTabActiveClass
                     第 {{ activeChapterId }} 章
                   </span>
                   <span
-                    v-if="quizLoadState === 'ready' && currentQuestion"
+                    v-if="quizLoadState === 'ready' && quizChapterFullyCorrect"
+                    class="inline-flex items-center rounded-xl border-2 border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-[var(--app-primary-strong)]"
+                  >
+                    本节小结
+                  </span>
+                  <span
+                    v-else-if="quizLoadState === 'ready' && currentQuestion"
                     class="inline-flex items-center rounded-xl border-2 border-[var(--app-primary-ring)] bg-[var(--app-primary-soft)] px-3 py-1.5 text-[11px] font-extrabold tracking-wide text-[var(--app-primary-strong)]"
                   >
                     {{ currentQuestion.question_type === 'single' ? '单选题' : '多选题' }}
@@ -861,6 +964,76 @@ const studyTabActiveClass
               >
                 加载题目失败：<span class="font-mono text-[13px]">{{ quizErr }}</span>
               </div>
+
+              <template v-else-if="quizLoadState === 'ready' && quizChapterFullyCorrect">
+                <div class="mt-8 space-y-3">
+                  <p class="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[var(--app-primary-strong)]">
+                    本节巩固
+                  </p>
+                  <h3 class="text-pretty text-xl font-black leading-snug text-[var(--app-text)] sm:text-2xl">
+                    全部答对，本节练习已完成
+                  </h3>
+                  <p class="text-sm font-bold text-[var(--app-muted)]">
+                    下方为本节小结（about），读完可按指引继续学习。
+                  </p>
+                </div>
+
+                <div class="mt-8 min-h-[8rem] min-w-0">
+                  <div
+                    v-if="aboutLoading"
+                    class="rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] px-6 py-10 text-center text-sm font-bold text-[var(--app-muted)]"
+                  >
+                    正在加载小结…
+                  </div>
+                  <div
+                    v-else-if="aboutError"
+                    class="rounded-2xl border-2 border-[var(--app-border-strong)] bg-[var(--app-subtle)] px-5 py-4 text-sm font-bold text-[var(--app-text)]"
+                    role="alert"
+                  >
+                    <p>暂时无法加载本节小结，可稍后再试。</p>
+                    <p class="mt-2 font-mono text-[13px] opacity-90">
+                      {{ aboutError }}
+                    </p>
+                  </div>
+                  <MarkdownProseScope v-else>
+                    <article
+                      class="markdown-test-prose max-w-none rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] px-5 py-5 sm:px-7 sm:py-7"
+                      aria-label="本节小结"
+                      v-html="aboutBodyHtml"
+                    />
+                  </MarkdownProseScope>
+                </div>
+
+                <div
+                  class="mt-10 flex flex-col gap-4 border-t-2 border-[var(--app-border)] pt-8 sm:flex-row sm:flex-wrap sm:items-stretch sm:justify-between"
+                >
+                  <div class="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+                    <button
+                      v-if="hasNextChapter"
+                      type="button"
+                      :class="introBtnClass"
+                      class="px-6 py-3.5"
+                      @click="continueToNextChapterFromSummary"
+                    >
+                      进入下一章学习（第 {{ chapterIds[chapterIndex + 1] }} 章）
+                    </button>
+                    <p
+                      v-else
+                      class="max-w-xl rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] px-5 py-4 text-sm font-extrabold leading-relaxed text-[var(--app-text)]"
+                    >
+                      当前已是最后一章；若之后增加新章节，可从课题列表再次进入学习。
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    :class="chapterNavBtnClass"
+                    class="self-start border-[var(--app-border)] shadow-none sm:self-center"
+                    @click="setStudySubMode('read')"
+                  >
+                    返回本节正文
+                  </button>
+                </div>
+              </template>
 
               <template v-else-if="quizLoadState === 'ready' && currentQuestion">
                 <div
@@ -975,6 +1148,13 @@ const studyTabActiveClass
                   </div>
                 </div>
               </template>
+
+              <div
+                v-else-if="quizLoadState === 'ready'"
+                class="mt-10 rounded-2xl border-2 border-dashed border-[var(--app-border)] bg-[var(--app-subtle)] px-6 py-12 text-center text-sm font-extrabold text-[var(--app-muted)]"
+              >
+                本节暂无练习题。
+              </div>
             </div>
           </div>
         </section>

@@ -3,49 +3,24 @@
     "question_id": 1001,
     "chapter_id": 1,
     "question_type": "single",
-    "question_title": "以下关于抑郁说法中，更贴切科普用途的是？",
+    "question_title": "抑郁症是什么",
     "options": [
       {
         "option_code": "A",
-        "option_text": "只要有几天心情不好，就可以诊断为抑郁症。"
+        "option_text": "是一种精神疾病需要慢慢呵护和治疗的"
       },
       {
         "option_code": "B",
-        "option_text": "是否需专业关注，常需结合持续时间、严重程度与对日常功能的影响来理解。"
+        "option_text": "就是矫情，不够坚强"
       },
       {
         "option_code": "C",
-        "option_text": "抑郁症只能靠意志力扛过去，求助代表软弱。"
+        "option_text": "故意作秀，哗众取宠"
       }
     ],
     "answer_rule": {
       "type": "single",
-      "correct": ["B"],
-      "scoring_mode": "all_or_nothing"
-    }
-  },
-  {
-    "question_id": 1002,
-    "chapter_id": 1,
-    "question_type": "single",
-    "question_title": "当情绪困扰持续并影响生活时，下面哪种态度更合适？",
-    "options": [
-      {
-        "option_code": "A",
-        "option_text": "完全靠自己硬扛，绝不向外求助。"
-      },
-      {
-        "option_code": "B",
-        "option_text": "可以了解并考虑寻求专业评估与支持，就像对待其他健康问题一样。"
-      },
-      {
-        "option_code": "C",
-        "option_text": "凭网上量表结果自行下结论并调整用药。"
-      }
-    ],
-    "answer_rule": {
-      "type": "single",
-      "correct": ["B"],
+      "correct": ["A"],
       "scoring_mode": "all_or_nothing"
     }
   }
