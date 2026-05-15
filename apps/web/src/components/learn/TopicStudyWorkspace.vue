@@ -32,6 +32,16 @@ function playSfx(src: string) {
   void audio.play().catch(() => {})
 }
 
+/** 答对后延迟自动下一题；需在换题、卸载等时机清理 */
+let autoAdvanceAfterCorrectTimer: ReturnType<typeof setTimeout> | null = null
+
+function clearAutoAdvanceAfterCorrectTimer() {
+  if (autoAdvanceAfterCorrectTimer != null) {
+    clearTimeout(autoAdvanceAfterCorrectTimer)
+    autoAdvanceAfterCorrectTimer = null
+  }
+}
+
 const router = useRouter()
 
 const phase = ref<'intro' | 'study'>('intro')
@@ -368,6 +378,7 @@ function selectChapter(cid: number) {
   if (activeChapterId.value === cid) {
     return
   }
+  clearAutoAdvanceAfterCorrectTimer()
   const prev = activeChapterId.value
   if (prev != null && phase.value === 'study') {
     persistCurrentQuestionIntoChapterMap(prev)
@@ -466,6 +477,8 @@ function onPickOption(code: string) {
     return
   }
 
+  playSfx(clickSfx)
+
   if (q.question_type === 'single') {
     selectedCodes.value = [code]
   }
@@ -490,6 +503,8 @@ function submitAnswer() {
     return
   }
 
+  clearAutoAdvanceAfterCorrectTimer()
+
   const rule = q.answer_rule
   if (rule.type === 'single') {
     if (selectedCodes.value.length !== 1) {
@@ -512,6 +527,26 @@ function submitAnswer() {
     playSfx(wrongSfx)
   }
   saveProgress()
+
+  if (
+    resultCorrect.value === true
+    && activeQuizIndex.value < questionItems.value.length - 1
+  ) {
+    const advanceFromId = q.question_id
+    autoAdvanceAfterCorrectTimer = window.setTimeout(() => {
+      autoAdvanceAfterCorrectTimer = null
+      if (currentQuestion.value?.question_id !== advanceFromId) {
+        return
+      }
+      if (!submitted.value || resultCorrect.value !== true) {
+        return
+      }
+      if (activeQuizIndex.value >= questionItems.value.length - 1) {
+        return
+      }
+      setActiveQuizIndex(activeQuizIndex.value + 1)
+    }, 650)
+  }
 }
 
 const canSubmit = computed(() => {
@@ -526,6 +561,7 @@ const canSubmit = computed(() => {
 })
 
 onBeforeUnmount(() => {
+  clearAutoAdvanceAfterCorrectTimer()
   saveTopicLearnProgress(props.topicMeta.topicId, buildSnapshot())
 })
 
