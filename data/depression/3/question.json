@@ -1,0 +1,31 @@
+[
+  {
+    "question_id": 1001,
+    "chapter_id": 3,
+    "question_type": "single",
+    "question_title": "以下什么做法能让患者感受到安全感",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "请高人"
+      },
+      {
+        "option_code": "B",
+        "option_text": "没收患者所有与人有关的玩偶之类的玩具（如果有）"
+      },
+      {
+        "option_code": "C",
+        "option_text": "晾着ta，让ta自生自灭"
+      },
+      {
+        "option_code": "D",
+        "option_text": "陪着患者给予安慰，或者是所有能让患者感受到安全感的行为"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["D"],
+      "scoring_mode": "all_or_nothing"
+    }
+  }
+]

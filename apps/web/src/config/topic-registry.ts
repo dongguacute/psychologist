@@ -5,5 +5,5 @@ app.route({
   topicId: 'depression',
   name: '抑郁症',
   logo: defaultTopicLogo,
-  chapterIds: [1,2],
+  chapterIds: [1,2,3],
 })
