@@ -3,7 +3,7 @@ import { parseQuestionBankItem } from './question.js'
 import type { QuestionBankItem } from './types.js'
 
 export function topicIndexPublicUrl(topicId: string, base = '/data'): string {
-  const rel = `${topicId}/index.md`.replace(/^\/+/, '')
+  const rel = `${topicId}/index.html`.replace(/^\/+/, '')
   return toPublicDataUrl(rel, base)
 }
 

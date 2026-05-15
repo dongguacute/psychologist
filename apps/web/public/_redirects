@@ -1,0 +1,2 @@
+# Netlify / Cloudflare Pages：优先命中已有静态文件，其余交给 SPA 入口
+/* /index.html 200

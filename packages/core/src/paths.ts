@@ -38,9 +38,9 @@ export function chapterAssetPathsRelativeToData(
 
   const ch = String(chapterId)
   return {
-    topicIndex: `${topicFolder}/index.md`,
-    main: `${topicFolder}/${ch}/main.md`,
-    about: `${topicFolder}/${ch}/about.md`,
+    topicIndex: `${topicFolder}/index.html`,
+    main: `${topicFolder}/${ch}/main.html`,
+    about: `${topicFolder}/${ch}/about.html`,
     questionJson: `${topicFolder}/${ch}/question.json`,
   }
 }

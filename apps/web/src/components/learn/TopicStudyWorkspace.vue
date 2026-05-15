@@ -11,7 +11,6 @@ import { useRouter } from 'vue-router'
 import { topicChapterIds } from '@/app/registry'
 import { ROUTE_NAMES } from '@/app/routes'
 import MarkdownProseScope from '@/components/markdown/MarkdownProseScope.vue'
-import { renderRuntimeMarkdown } from '@/lib/runtimeMarkdown'
 import {
   loadTopicLearnProgress,
   saveTopicLearnProgress,
@@ -95,7 +94,7 @@ watch(chapterIds, (ids) => {
   }
 })
 
-const indexMarkdown = ref('')
+const indexBodyHtml = ref('')
 const indexLoading = ref(false)
 const indexError = ref<string | null>(null)
 
@@ -106,7 +105,7 @@ watch(
       return
     }
     indexError.value = null
-    indexMarkdown.value = ''
+    indexBodyHtml.value = ''
     indexLoading.value = true
     try {
       const url = topicIndexPublicUrl(tid)
@@ -114,7 +113,7 @@ watch(
       if (!res.ok) {
         throw new Error(`${res.status} ${res.statusText} — ${url}`)
       }
-      indexMarkdown.value = await res.text()
+      indexBodyHtml.value = await res.text()
     }
     catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
@@ -150,9 +149,7 @@ function selectChapter(cid: number) {
   activeChapterId.value = cid
 }
 
-const indexHtml = computed(() => renderRuntimeMarkdown(indexMarkdown.value))
-
-const mainMarkdown = ref('')
+const mainBodyHtml = ref('')
 const loadError = ref<string | null>(null)
 const loading = ref(false)
 
@@ -160,7 +157,7 @@ watch(
   [activeChapterId, () => props.topicMeta.topicId, phase],
   async ([ch, tid, ph]) => {
     loadError.value = null
-    mainMarkdown.value = ''
+    mainBodyHtml.value = ''
     if (ph !== 'study' || ch === null || ch === undefined) {
       return
     }
@@ -172,7 +169,7 @@ watch(
       if (!res.ok) {
         throw new Error(`${res.status} ${res.statusText} — ${url}`)
       }
-      mainMarkdown.value = await res.text()
+      mainBodyHtml.value = await res.text()
     }
     catch (e) {
       const msg = e instanceof Error ? e.message : String(e)
@@ -184,8 +181,6 @@ watch(
   },
   { immediate: true },
 )
-
-const mainHtml = computed(() => renderRuntimeMarkdown(mainMarkdown.value))
 
 const questionItem = ref<QuestionBankItem | null>(null)
 const quizLoadState = ref<'idle' | 'loading' | 'ready' | 'missing' | 'error'>(
@@ -359,7 +354,7 @@ const introBtnClass
       </div>
     </header>
 
-    <!-- 引导：index.md -->
+    <!-- 引导：index.html（构建阶段由 index.md 生成） -->
     <template v-if="phase === 'intro'">
       <div
         v-if="indexLoading"
@@ -379,7 +374,7 @@ const introBtnClass
           <article
             class="markdown-test-prose max-w-none rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] px-5 py-5 sm:px-7 sm:py-7"
             aria-label="课题说明"
-            v-html="indexHtml"
+            v-html="indexBodyHtml"
           />
         </MarkdownProseScope>
         <div class="flex flex-wrap justify-end gap-3">
@@ -404,9 +399,9 @@ const introBtnClass
         <code class="rounded-md bg-[var(--app-hover)] px-1.5 py-0.5 text-[var(--app-text)]">topic-registry.ts</code>
         里配置
         <code class="rounded-md bg-[var(--app-hover)] px-1.5 py-0.5 text-[var(--app-text)]">chapterIds</code>
-        ，并在
-        <code class="rounded-md bg-[var(--app-hover)] px-1.5 py-0.5 text-[var(--app-text)]">public/data/{{ topicMeta.topicId }}/</code>
-        下放置章节资源。
+        ，并在仓库根目录
+        <code class="rounded-md bg-[var(--app-hover)] px-1.5 py-0.5 text-[var(--app-text)]">data/{{ topicMeta.topicId }}/</code>
+        下放置章节资源（勿放在 <code class="rounded-md bg-[var(--app-hover)] px-1.5 py-0.5 text-[var(--app-text)]">apps/web/public</code>）。
       </p>
 
       <div
@@ -463,7 +458,7 @@ const introBtnClass
               <article
                 class="markdown-test-prose max-w-none rounded-2xl border-2 border-[var(--app-border)] bg-[var(--app-subtle)] px-5 py-5 sm:px-7 sm:py-7"
                 :aria-label="`第 ${activeChapterId} 章正文`"
-                v-html="mainHtml"
+                v-html="mainBodyHtml"
               />
             </MarkdownProseScope>
           </div>
