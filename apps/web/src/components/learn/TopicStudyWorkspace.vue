@@ -21,8 +21,16 @@ import {
   loadTopicLearnProgress,
   saveTopicLearnProgress,
 } from '@/lib/topicLearnProgressStorage'
+import clickSfx from '@/assets/audio/click.mp3'
+import correctSfx from '@/assets/audio/correct.mp3'
+import wrongSfx from '@/assets/audio/wrong.mp3'
 
 const props = defineProps<{ topicMeta: RegisteredTopic }>()
+
+function playSfx(src: string) {
+  const audio = new Audio(src)
+  void audio.play().catch(() => {})
+}
 
 const router = useRouter()
 
@@ -201,6 +209,11 @@ function setActiveQuizIndex(next: number) {
     emptyQuestionUi()
   }
   saveProgress()
+}
+
+function goAdjacentQuizQuestion(delta: 1 | -1) {
+  playSfx(clickSfx)
+  setActiveQuizIndex(activeQuizIndex.value + delta)
 }
 
 function buildSnapshot(): TopicLearnProgressV1 {
@@ -492,6 +505,12 @@ function submitAnswer() {
         && picked.every((v, i) => v === correct[i])
   }
   submitted.value = true
+  if (resultCorrect.value === true) {
+    playSfx(correctSfx)
+  }
+  else if (resultCorrect.value === false) {
+    playSfx(wrongSfx)
+  }
   saveProgress()
 }
 
@@ -821,7 +840,7 @@ const studyTabActiveClass
                       :class="chapterNavBtnClass"
                       class="border-[var(--app-border)] shadow-none"
                       :disabled="!hasPrevQuizQuestion"
-                      @click="setActiveQuizIndex(activeQuizIndex - 1)"
+                      @click="goAdjacentQuizQuestion(-1)"
                     >
                       上一题
                     </button>
@@ -830,7 +849,7 @@ const studyTabActiveClass
                       :class="chapterNavBtnClass"
                       class="border-[var(--app-border)] shadow-none"
                       :disabled="!hasNextQuizQuestion"
-                      @click="setActiveQuizIndex(activeQuizIndex + 1)"
+                      @click="goAdjacentQuizQuestion(1)"
                     >
                       下一题
                     </button>
