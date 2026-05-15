@@ -9,6 +9,12 @@ export {
   toPublicDataUrl,
 } from './paths.js'
 
+export {
+  EMBEDDED_JSON_SCRIPT_ID,
+  extractEmbeddedJsonFromDataHtml,
+  wrapJsonAsDataHtml,
+} from './data-html.js'
+
 export { parseQuestionBankItem } from './question.js'
 
 export {

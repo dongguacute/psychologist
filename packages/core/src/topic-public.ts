@@ -1,3 +1,4 @@
+import { extractEmbeddedJsonFromDataHtml } from './data-html.js'
 import { chapterAssetPathsRelativeToData, toPublicDataUrl } from './paths.js'
 import { parseQuestionBankItem } from './question.js'
 import type { QuestionBankItem } from './types.js'
@@ -30,13 +31,14 @@ export async function fetchChapterQuestion(
   chapterId: number,
   base = '/data',
 ): Promise<QuestionBankItem> {
-  const { questionJson } = chapterAssetPathsRelativeToData(topicId, chapterId)
-  const url = toPublicDataUrl(questionJson, base)
+  const { questionHtml } = chapterAssetPathsRelativeToData(topicId, chapterId)
+  const url = toPublicDataUrl(questionHtml, base)
   const res = await fetch(url)
   if (!res.ok) {
     throw new Error(
       `加载题目失败 ${res.status}: ${url}`,
     )
   }
-  return parseQuestionBankItem(await res.text())
+  const html = await res.text()
+  return parseQuestionBankItem(extractEmbeddedJsonFromDataHtml(html))
 }

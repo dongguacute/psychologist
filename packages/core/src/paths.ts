@@ -28,7 +28,7 @@ export function chapterAssetPathsRelativeToData(
   topicIndex: string
   main: string
   about: string
-  questionJson: string
+  questionHtml: string
 } {
   assertSafeTopicFolder(topicFolder)
   if (!Number.isInteger(chapterId))
@@ -41,7 +41,7 @@ export function chapterAssetPathsRelativeToData(
     topicIndex: `${topicFolder}/index.html`,
     main: `${topicFolder}/${ch}/main.html`,
     about: `${topicFolder}/${ch}/about.html`,
-    questionJson: `${topicFolder}/${ch}/question.json`,
+    questionHtml: `${topicFolder}/${ch}/question.html`,
   }
 }
 

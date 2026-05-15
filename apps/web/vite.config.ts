@@ -9,6 +9,7 @@ import type { Connect, Plugin, ViteDevServer } from 'vite'
 import { defineConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+import { wrapJsonAsDataHtml } from '@psychologist/core'
 import { renderDataMarkdown } from './src/lib/dataMarkdown'
 
 const webRoot = fileURLToPath(new URL('.', import.meta.url))
@@ -52,7 +53,24 @@ function walkMarkdownFiles(dir: string, onFile: (abs: string) => void): void {
   }
 }
 
-/** 构建：用仓库根 `data/` 覆盖写入 `dist/data/`，再把其中 `.md` 编译为同级 `.html`。 */
+function walkJsonFiles(dir: string, onFile: (abs: string) => void): void {
+  if (!fs.existsSync(dir))
+    return
+  for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+    const abs = path.join(dir, ent.name)
+    if (ent.isDirectory()) {
+      walkJsonFiles(abs, onFile)
+    }
+    else if (ent.isFile() && ent.name.toLowerCase().endsWith('.json')) {
+      onFile(abs)
+    }
+  }
+}
+
+/**
+ * 构建：用仓库根 `data/` 覆盖写入 `dist/data/`，将 `.md`、`.json` 编译为同级 `.html` 后删除源文件，
+ * `dist` 中不保留 `.md` / `.json`。
+ */
 function psychologistRepoDataBuildPlugin(): Plugin {
   let outDir = ''
   return {
@@ -71,6 +89,13 @@ function psychologistRepoDataBuildPlugin(): Plugin {
         const mdSource = fs.readFileSync(absMd, 'utf8')
         const htmlPath = absMd.replace(/\.md$/i, '.html')
         fs.writeFileSync(htmlPath, renderDataMarkdown(mdSource), 'utf8')
+        fs.unlinkSync(absMd)
+      })
+      walkJsonFiles(dataOut, (absJson) => {
+        const raw = fs.readFileSync(absJson, 'utf8')
+        const htmlPath = absJson.replace(/\.json$/i, '.html')
+        fs.writeFileSync(htmlPath, wrapJsonAsDataHtml(raw), 'utf8')
+        fs.unlinkSync(absJson)
       })
     },
   }
@@ -147,30 +172,52 @@ function psychologistRepoDataDevPlugin(): Plugin {
 
         const rel = pathname.slice('/data/'.length)
 
-        // 开发：/data/**/*.html 由同名 .md 即时渲染（与构建写入 dist 的 HTML 一致）
+        // 开发：/data/**/*.html 优先同名 .md 即时渲染；若无 .md 则尝试同名 .json 包成 HTML（与 dist 一致）
         if (rel.toLowerCase().endsWith('.html')) {
-          const mdRel = rel.replace(/\.html$/i, '.md')
           if (!fs.existsSync(repoDataRoot)) {
             next()
             return
           }
+          const mdRel = rel.replace(/\.html$/i, '.md')
           const absMd = resolveSafeFileUnderRoot(repoDataRoot, mdRel)
-          if (!absMd || !fs.existsSync(absMd)) {
-            next()
+          if (absMd && fs.existsSync(absMd)) {
+            fs.readFile(absMd, { encoding: 'utf8' }, (err, mdSource) => {
+              if (err) {
+                next()
+                return
+              }
+              res.setHeader('Content-Type', 'text/html; charset=utf-8')
+              if (req.method === 'HEAD') {
+                res.end()
+                return
+              }
+              res.end(renderDataMarkdown(mdSource))
+            })
             return
           }
-          fs.readFile(absMd, { encoding: 'utf8' }, (err, mdSource) => {
-            if (err) {
-              next()
-              return
-            }
-            res.setHeader('Content-Type', 'text/html; charset=utf-8')
-            if (req.method === 'HEAD') {
-              res.end()
-              return
-            }
-            res.end(renderDataMarkdown(mdSource))
-          })
+          const jsonRel = rel.replace(/\.html$/i, '.json')
+          const absJson = resolveSafeFileUnderRoot(repoDataRoot, jsonRel)
+          if (absJson && fs.existsSync(absJson)) {
+            fs.readFile(absJson, { encoding: 'utf8' }, (err, raw) => {
+              if (err) {
+                next()
+                return
+              }
+              res.setHeader('Content-Type', 'text/html; charset=utf-8')
+              if (req.method === 'HEAD') {
+                res.end()
+                return
+              }
+              try {
+                res.end(wrapJsonAsDataHtml(raw))
+              }
+              catch {
+                next()
+              }
+            })
+            return
+          }
+          next()
           return
         }
 
