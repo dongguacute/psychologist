@@ -4,6 +4,9 @@ export const TOPIC_LEARN_STORAGE_KEY_PREFIX = 'psychologist.topicLearn.v1:' as c
 
 export type TopicLearnPhase = 'intro' | 'study'
 
+/** 学习阶段的界面：先看正文还是先答题面板 */
+export type TopicLearnStudySubMode = 'read' | 'quiz'
+
 export interface TopicLearnQuizChapterState {
   selectedCodes: string[]
   submitted: boolean
@@ -14,6 +17,8 @@ export interface TopicLearnProgressV1 {
   v: 1
   phase: TopicLearnPhase
   activeChapterId: number | null
+  /** 未写入的旧数据默认为「正文」模式 */
+  studySubMode?: TopicLearnStudySubMode
   quizByChapter: Record<string, TopicLearnQuizChapterState>
 }
 
@@ -50,6 +55,13 @@ function isProgressV1(x: unknown): x is TopicLearnProgressV1 {
     return false
   }
   if (o.activeChapterId !== null && typeof o.activeChapterId !== 'number') {
+    return false
+  }
+  if (
+    o.studySubMode !== undefined
+    && o.studySubMode !== 'read'
+    && o.studySubMode !== 'quiz'
+  ) {
     return false
   }
   if (typeof o.quizByChapter !== 'object' || o.quizByChapter === null) {
