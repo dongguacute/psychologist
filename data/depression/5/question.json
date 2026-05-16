@@ -1,0 +1,118 @@
+[
+  {
+    "question_id": 1001,
+    "chapter_id": 5,
+    "question_type": "single",
+    "question_title": "患者毫无缘由突然暴躁易怒，频繁发脾气，本质原因是？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "年纪越长脾气越差，故意针对家人发泄不满"
+      },
+      {
+        "option_code": "B",
+        "option_text": "身心长期积压压力过大，情绪阈值变低，属于病症带来的情绪失控"
+      },
+      {
+        "option_code": "C",
+        "option_text": "被家人过度纵容，养成任性蛮横的性格习惯"
+      },
+      {
+        "option_code": "D",
+        "option_text": "无事生非，单纯想挑起矛盾博取关注"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  },
+  {
+    "question_id": 1002,
+    "chapter_id": 5,
+    "question_type": "single",
+    "question_title": "患者情绪爆发发火过后，大多内心真实状态是？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "发泄完内心畅快，毫无愧疚知错之心"
+      },
+      {
+        "option_code": "B",
+        "option_text": "冷静后心生自责后悔，却依旧无法控制下次情绪"
+      },
+      {
+        "option_code": "C",
+        "option_text": "认为家人理应包容，从来不会反思自身行为"
+      },
+      {
+        "option_code": "D",
+        "option_text": "刻意假装愧疚，只为平息家人怒火"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  },
+  {
+    "question_id": 1003,
+    "chapter_id": 5,
+    "question_type": "single",
+    "question_title": "患者正在暴怒情绪上头时，家人最不适宜的做法是？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "暂时退让回避，不正面发生冲突"
+      },
+      {
+        "option_code": "B",
+        "option_text": "当场讲道理反驳，指责其不懂事乱发脾气"
+      },
+      {
+        "option_code": "C",
+        "option_text": "默默陪伴沉默，等待情绪自行平复"
+      },
+      {
+        "option_code": "D",
+        "option_text": "轻声安抚，不激化对方负面情绪"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  },
+  {
+    "question_id": 1004,
+    "chapter_id": 5,
+    "question_type": "single",
+    "question_title": "长期把患者暴躁发脾气当成性格缺陷严加管教，最终最容易造成什么结果？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "快速改正坏脾气，心态逐渐变得沉稳平和"
+      },
+      {
+        "option_code": "B",
+        "option_text": "情绪彻底向内压抑，沉默自闭，内心痛苦愈发严重"
+      },
+      {
+        "option_code": "C",
+        "option_text": "学会隐忍懂事，彻底摆脱心理负面状态"
+      },
+      {
+        "option_code": "D",
+        "option_text": "认清自身错误，主动调整情绪控制脾气"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  }
+]
