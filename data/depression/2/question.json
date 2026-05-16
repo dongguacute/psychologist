@@ -3,23 +3,23 @@
     "question_id": 1001,
     "chapter_id": 2,
     "question_type": "multiple",
-    "question_title": "以下哪句话最有可能加重抑郁症患者的痛苦？",
+    "question_title": "平日里长辈常说的哪些话语，最容易戳痛患者、加重内心煎熬？",
     "options": [
       {
         "option_code": "A",
-        "option_text": "想开点、别想太多"
+        "option_text": "凡事想开点，别整日胡思乱想"
       },
       {
         "option_code": "B",
-        "option_text": "别人比你更惨"
+        "option_text": "世上比你过得苦的人多得是"
       },
       {
         "option_code": "C",
-        "option_text": "你就是太闲了"
+        "option_text": "整天无所事事，闲出来的毛病"
       },
       {
         "option_code": "D",
-        "option_text": "坚强一点"
+        "option_text": "多大点事，咬咬牙坚强点就过去了"
       }
     ],
     "answer_rule": {
@@ -32,23 +32,23 @@
     "question_id": 1002,
     "chapter_id": 2,
     "question_type": "single",
-    "question_title": "如何正确安慰抑郁症患者？",
+    "question_title": "面对内心痛苦的患者，真正靠谱的关心方式是？",
     "options": [
       {
         "option_code": "A",
-        "option_text": "讲道理、劝人振作"
+        "option_text": "一味讲大道理，逼着对方强行振作"
       },
       {
         "option_code": "B",
-        "option_text": "先接纳ta的情绪，不评判、不否定"
+        "option_text": "体谅难处接纳情绪，不数落不否定不施压"
       },
       {
         "option_code": "C",
-        "option_text": "告诉他别人比你更惨，叫ta去ICU看看有多少人想活着"
+        "option_text": "拿旁人苦难对比，强行灌输人生大道理"
       },
       {
         "option_code": "D",
-        "option_text": "告诉他你就是太闲了"
+        "option_text": "指责对方无事生非，不懂体谅家人苦心"
       }
     ],
     "answer_rule": {
