@@ -1,0 +1,118 @@
+[
+  {
+    "question_id": 1001,
+    "chapter_id": 4,
+    "question_type": "single",
+    "question_title": "患者长期闭门不出、回避社交，核心根源更偏向于？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "习惯懒散安逸，刻意逃避现实生活压力"
+      },
+      {
+        "option_code": "B",
+        "option_text": "身心精力透支，内心自卑敏感，难以承受外界社交负担"
+      },
+      {
+        "option_code": "C",
+        "option_text": "性格内向孤僻，天生就不爱与人来往相处"
+      },
+      {
+        "option_code": "D",
+        "option_text": "厌烦身边亲人，刻意疏远所有人"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  },
+  {
+    "question_id": 1002,
+    "chapter_id": 4,
+    "question_type": "single",
+    "question_title": "对待患者整日使用电子设备消遣时光，最为中肯的看法是？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "短时间可以放松，长期沉迷依旧会彻底消磨意志"
+      },
+      {
+        "option_code": "B",
+        "option_text": "这是当下他最自在接触外界、排解情绪的重要途径，不该全盘否定"
+      },
+      {
+        "option_code": "C",
+        "option_text": "比起玩手机，静下心读书静养才是最稳妥的自愈方式"
+      },
+      {
+        "option_code": "D",
+        "option_text": "适当管控即可，无需过多干涉日常消遣方式"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  },
+  {
+    "question_id": 1003,
+    "chapter_id": 4,
+    "question_type": "single",
+    "question_title": "为什么静心读书并不适合一部分情绪低落的患者，且这类人群数量并不少？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "单纯不爱学习，内心抵触文字类内容"
+      },
+      {
+        "option_code": "B",
+        "option_text": "心神纷乱难以沉静，文字极易勾起负面情绪加重压抑感"
+      },
+      {
+        "option_code": "C",
+        "option_text": "觉得读书枯燥乏味，不如娱乐项目轻松有趣"
+      },
+      {
+        "option_code": "D",
+        "option_text": "没有足够空闲时间静下心认真品读书籍"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  },
+  {
+    "question_id": 1004,
+    "chapter_id": 4,
+    "question_type": "single",
+    "question_title": "面对始终不愿出门社交的患者，家人最合理的处事态度是？",
+    "options": [
+      {
+        "option_code": "A",
+        "option_text": "循序渐进劝导，慢慢引导走出家门融入生活"
+      },
+      {
+        "option_code": "B",
+        "option_text": "全然尊重当下状态，给予独处空间耐心等候自我缓和"
+      },
+      {
+        "option_code": "C",
+        "option_text": "减少言语劝说，用实际行动带动对方主动外出"
+      },
+      {
+        "option_code": "D",
+        "option_text": "适度施压督促，避免一直封闭自我停滞不前"
+      }
+    ],
+    "answer_rule": {
+      "type": "single",
+      "correct": ["B"],
+      "scoring_mode": "all_or_nothing"
+    }
+  }
+]
