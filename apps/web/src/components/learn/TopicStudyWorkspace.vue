@@ -17,20 +17,76 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { topicChapterIds } from '@/app/registry'
 import { ROUTE_NAMES } from '@/app/routes'
+import clickSfx from '@/assets/audio/click.mp3'
+import correctSfx from '@/assets/audio/correct.mp3'
+import wrongSfx from '@/assets/audio/wrong.mp3'
 import MarkdownProseScope from '@/components/markdown/MarkdownProseScope.vue'
 import {
   loadTopicLearnProgress,
   saveTopicLearnProgress,
 } from '@/lib/topicLearnProgressStorage'
-import clickSfx from '@/assets/audio/click.mp3'
-import correctSfx from '@/assets/audio/correct.mp3'
-import wrongSfx from '@/assets/audio/wrong.mp3'
+import { playSoundEffect } from '@/sound/playSoundEffect'
 
 const props = defineProps<{ topicMeta: RegisteredTopic }>()
 
-function playSfx(src: string) {
-  const audio = new Audio(src)
-  void audio.play().catch(() => {})
+const router = useRouter()
+
+const phase = ref<'intro' | 'study'>('intro')
+
+/** 「学习」阶段的正文 / 答题子界面 */
+const studySubMode = ref<TopicLearnStudySubMode>('read')
+
+const chapterIds = computed(() => topicChapterIds(props.topicMeta.topicId))
+
+/** 学习阶段在冒泡末尾统一播点击音（捕获阶段会先执行，子按钮尚未改写 phase / studySubMode，会漏掉「进入答题」等） */
+function onStudyWorkspaceUiClickForSfx(ev: MouseEvent) {
+  if (phase.value !== 'study') {
+    return
+  }
+  if (ev.button !== undefined && ev.button !== 0) {
+    return
+  }
+  const raw = ev.target
+  const start: Element | null
+    = raw instanceof Element
+      ? raw
+      : raw instanceof Node
+        ? raw.parentElement
+        : null
+  if (!start) {
+    return
+  }
+  if (start.closest('[data-no-quiz-deck-click-sfx]')) {
+    return
+  }
+
+  const ctrl = start.closest(
+    'button, select, textarea, label, input, summary, [role="button"], a[href]',
+  )
+  if (!ctrl) {
+    return
+  }
+
+  const fieldsetDisabled = ctrl.closest('fieldset[disabled]')
+  if (fieldsetDisabled) {
+    return
+  }
+
+  const button = ctrl instanceof HTMLButtonElement
+    ? ctrl
+    : ctrl?.closest('button')
+  if (button instanceof HTMLButtonElement && button.disabled) {
+    return
+  }
+
+  const inputEl = ctrl instanceof HTMLInputElement
+    ? ctrl
+    : ctrl?.closest('input')
+  if (inputEl instanceof HTMLInputElement && inputEl.disabled) {
+    return
+  }
+
+  playSoundEffect(clickSfx)
 }
 
 /** 答对后延迟自动下一题；需在换题、卸载等时机清理 */
@@ -42,15 +98,6 @@ function clearAutoAdvanceAfterCorrectTimer() {
     autoAdvanceAfterCorrectTimer = null
   }
 }
-
-const router = useRouter()
-
-const phase = ref<'intro' | 'study'>('intro')
-
-/** 「学习」阶段的正文 / 答题子界面 */
-const studySubMode = ref<TopicLearnStudySubMode>('read')
-
-const chapterIds = computed(() => topicChapterIds(props.topicMeta.topicId))
 
 const activeChapterId = ref<number | null>(null)
 
@@ -223,7 +270,6 @@ function setActiveQuizIndex(next: number) {
 }
 
 function goAdjacentQuizQuestion(delta: 1 | -1) {
-  playSfx(clickSfx)
   setActiveQuizIndex(activeQuizIndex.value + delta)
 }
 
@@ -376,7 +422,6 @@ function goNextChapter() {
 }
 
 function continueToNextChapterFromSummary() {
-  playSfx(clickSfx)
   goNextChapter()
 }
 
@@ -574,8 +619,6 @@ function onPickOption(code: string) {
     return
   }
 
-  playSfx(clickSfx)
-
   if (q.question_type === 'single') {
     selectedCodes.value = [code]
   }
@@ -618,10 +661,10 @@ function submitAnswer() {
   }
   submitted.value = true
   if (resultCorrect.value === true) {
-    playSfx(correctSfx)
+    playSoundEffect(correctSfx)
   }
   else if (resultCorrect.value === false) {
-    playSfx(wrongSfx)
+    playSoundEffect(wrongSfx)
   }
   saveProgress()
 
@@ -676,7 +719,10 @@ const studyTabActiveClass
 </script>
 
 <template>
-  <div class="learn-topic-studio flex flex-col gap-6">
+  <div
+    class="learn-topic-studio flex flex-col gap-6"
+    @click="onStudyWorkspaceUiClickForSfx"
+  >
     <header class="flex flex-wrap items-center gap-3">
       <button
         type="button"
@@ -1119,6 +1165,7 @@ const studyTabActiveClass
                 >
                   <button
                     type="button"
+                    data-no-quiz-deck-click-sfx
                     :disabled="!canSubmit"
                     :class="introBtnClass"
                     class="min-w-[10rem] px-8 py-3.5 text-base"

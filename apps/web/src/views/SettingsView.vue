@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import type { ThemePreference } from '@/theme/constants'
-import { FileCode2, MonitorSmartphone, Moon, Sun, Trash2 } from '@lucide/vue'
+import {
+  FileCode2,
+  MonitorSmartphone,
+  Moon,
+  Sun,
+  Trash2,
+  Volume2,
+  VolumeX,
+} from '@lucide/vue'
 import { RouterLink } from 'vue-router'
+import { useSoundPreference } from '@/composables/useSoundPreference'
 import { useThemePreference } from '@/composables/useThemePreference'
 
 const { preference, resolvedScheme, setPreference } = useThemePreference()
+const { muted, setMuted } = useSoundPreference()
 
 const options = [
   {
@@ -35,10 +45,29 @@ function select(pref: ThemePreference) {
   setPreference(pref)
 }
 
+const soundOptions = [
+  {
+    value: false as const,
+    title: '开启音效',
+    description: '学习中所有应用内音效（点击、答对 / 答错提示等）',
+    icon: Volume2,
+  },
+  {
+    value: true as const,
+    title: '静音',
+    description: '不播放上述任何音效，完全无声',
+    icon: VolumeX,
+  },
+]
+
+function selectSoundMute(m: boolean) {
+  setMuted(m)
+}
+
 function clearAllLocalData() {
   // eslint-disable-next-line no-alert -- destructive action needs a native confirm
   const ok = window.confirm(
-    '确定要清除所有本地数据吗？\n\n将清空本应用在本浏览器中保存的全部内容（含打卡记录、主题设置等），且无法恢复。',
+    '确定要清除所有本地数据吗？\n\n将清空本应用在本浏览器中保存的全部内容（含打卡记录、主题与音效设置等），且无法恢复。',
   )
   if (!ok)
     return
@@ -142,12 +171,63 @@ function clearAllLocalData() {
 
     <div
       class="rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-5 shadow-[0_6px_0_0_var(--app-border)] sm:p-6"
+      role="radiogroup"
+      aria-label="音效"
+    >
+      <h2 class="mb-5 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted) sm:mb-6">
+        音效
+      </h2>
+
+      <ul class="flex flex-col gap-3 sm:gap-3.5">
+        <li v-for="opt in soundOptions" :key="String(opt.value)">
+          <button
+            type="button"
+            role="radio"
+            class="flex w-full items-center gap-4 rounded-2xl border-2 px-4 py-3 text-left outline-none transition-colors ring-(--app-primary) ring-offset-2 ring-offset-(--app-surface) focus-visible:ring-2"
+            :class="
+              muted === opt.value
+                ? 'border-(--app-primary-ring) bg-(--app-primary-soft) text-(--app-primary-strong)'
+                : 'border-(--app-border) bg-(--app-subtle) text-(--app-text) hover:bg-(--app-hover)'
+            "
+            :aria-checked="muted === opt.value"
+            @click="selectSoundMute(opt.value)"
+          >
+            <span
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 transition-colors"
+              :class="
+                muted === opt.value
+                  ? 'border-(--app-primary) bg-(--app-surface) text-(--app-primary)'
+                  : 'border-(--app-border) bg-(--app-surface) text-(--app-muted)'
+              "
+            >
+              <component
+                :is="opt.icon"
+                :size="22"
+                :stroke-width="2.5"
+                aria-hidden="true"
+              />
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-[15px] font-extrabold tracking-wide">
+                {{ opt.title }}
+              </span>
+              <span class="mt-0.5 block text-sm font-bold text-(--app-muted)">
+                {{ opt.description }}
+              </span>
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div
+      class="rounded-3xl border-2 border-(--app-border) bg-(--app-surface) p-5 shadow-[0_6px_0_0_var(--app-border)] sm:p-6"
     >
       <h2 class="mb-5 text-[13px] font-extrabold uppercase tracking-wider text-(--app-muted) sm:mb-6">
         数据与隐私
       </h2>
       <p class="text-sm font-bold leading-relaxed text-(--app-muted) sm:leading-loose">
-        清除后，本应用在本浏览器中的全部本地数据都会被删除（含打卡记录、外观偏好等），且无法恢复。页面将自动刷新。
+        清除后，本应用在本浏览器中的全部本地数据都会被删除（含打卡记录、外观与音效偏好等），且无法恢复。页面将自动刷新。
       </p>
       <button
         type="button"
