@@ -3,19 +3,19 @@
     "question_id": 1001,
     "chapter_id": 1,
     "question_type": "single",
-    "question_title": "抑郁症是什么",
+    "question_title": "下列对于抑郁症的看法正确的是",
     "options": [
       {
         "option_code": "A",
-        "option_text": "是一种精神疾病需要慢慢呵护和治疗的"
+        "option_text": "属于正经精神疾病，如同身体生病一般，需要用心呵护与专业调理"
       },
       {
         "option_code": "B",
-        "option_text": "就是矫情，不够坚强"
+        "option_text": "纯粹是内心软弱，吃不了苦、不够坚强"
       },
       {
         "option_code": "C",
-        "option_text": "故意作秀，哗众取宠"
+        "option_text": "没事闲的装样子，刻意博取他人同情"
       }
     ],
     "answer_rule": {
